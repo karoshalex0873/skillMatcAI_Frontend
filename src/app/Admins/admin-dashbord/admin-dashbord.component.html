@@ -1,0 +1,75 @@
+<div
+  class="min-h-screen h-full bg-primary flex flex-col md:flex-row pt-14 md:py-24"
+>
+  <!-- Mobile Menu Button -->
+  <button
+    class="md:hidden fixed left-4 top-4 z-50 text-light-100 p-2 rounded-lg bg-dark-100/80 hover:bg-dark-100"
+    (click)="isMobileMenuOpen = !isMobileMenuOpen"
+  >
+    <ng-icon
+      [name]="isMobileMenuOpen ? 'ionCloseOutline' : 'ionMenuOutline'"
+      class="w-6 h-6"
+    ></ng-icon>
+  </button>
+
+  <!-- Sidebar -->
+  <aside
+    class="w-full md:w-64 bg-dark-100/70 z-50 backdrop-blur-xl p-6 fixed md:relative h-full mx-0 md:mx-4 rounded-none md:rounded-xl transition-transform duration-300"
+    [class]="
+      isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+    "
+  >
+    <div
+      class="mb-8 my-2 flex flex-col justify-center items-start text-start space-y-3"
+    >
+      <p class="text-light-200 text-sm mt-1">Admin Page</p>
+      <div class=" flex justify-center items-center gap-3">
+        <h2 class="text-light-100 text-xl font-semibold">
+          👋 <strong>Admin</strong>
+        </h2>
+        <img 
+        [src]="avatarUrl" 
+        class="w-14 h-14 rounded-full object-cover"
+        alt="User Image" />
+      </div>
+    </div>
+    <nav class="space-y-2 sm:space-y-6">
+      <a
+        *ngFor="let link of links"
+        [routerLink]="link.path"
+        routerLinkActive="bg-light-100/30 text-light-100"
+        class="flex items-center px-4 py-3 text-light-200 hover:bg-light-100/10 rounded-lg transition-colors text-sm md:text-base"
+        (click)="isMobileMenuOpen = false"
+      >
+        <ng-icon [name]="link.icon" class="w-5 h-5 mr-3"></ng-icon>
+        {{ link.label }}
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 mt-20 md:mt-0 md:ml-0 mr-0 md:mr-8 p-8 md:p-0">
+    <div class="flex justify-between">
+      <div class="flex gap-10 justify-between items-center flex-row">
+        <p class="text-light-200/80 font-medium text-base italic px-3">
+          Manage users, monitor system performance, fine-tune AI accuracy, and
+          optimize platform security from one centralized hub.
+        </p>
+      </div>
+      <!-- absoulote logout btn -->
+      <div>
+        <button
+          class="bg-light-100 right-4 top-4 z-50 text-primary-100 p-2 rounded-lg hover:bg-light-100/60 cursor-pointer transition duration-300"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+    <div
+      class="border-light-100/5 border shadow-lg sm:shadow-2xl bg-dark-100/70 rounded-md py-4 px-2 md:py-6 md:px-4"
+    >
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,86 @@
+<div class="max-h-[75vh] overflow-auto hide-scrollbar px-4 scrollbar-hide">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div
+      *ngFor="let job of jobs"
+      class="bg-light-100/15 rounded-lg p-4 hover:bg-dark-200 transition-colors"
+    >
+      <!-- Top section -->
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex flex-col space-y-1">
+          <h3 class="text-light-100 text-base font-semibold">{{ job.title }}</h3>
+          <p class="text-light-200 text-sm">{{ job.company }}</p>
+        </div>
+        <span
+          class="px-2 py-1 rounded-md text-sm font-medium"
+          [ngClass]="getMatchColor(job.matchPercentage)"
+        >
+          {{ job.matchPercentage }}% Match
+        </span>
+      </div>
+
+      <!-- Divider -->
+      <div class="h-px bg-light-100 rounded w-full my-3"></div>
+
+      <!-- Skills -->
+      <div class="flex flex-wrap gap-2 items-center mb-3">
+        <span
+          *ngFor="let skill of job.skills"
+          class="px-2 py-1 text-sm bg-primary/20 text-light-200 rounded-md"
+        >
+          {{ skill }}
+        </span>
+      </div>
+
+      <!-- Description -->
+      <div class="bg-dark-100 py-3 px-3 rounded-md">
+        <h4 class="text-light-100 font-semibold text-sm mb-3">Description</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+          <!-- Location -->
+          <div class="flex flex-col text-light-200">
+            <span class="font-semibold text-light-100 mb-0.5">Location:</span>
+            <div class="flex items-center">
+              <ng-icon name="ionLocationOutline" class="w-4 h-4 mr-1"></ng-icon>
+              {{ job.location }}
+            </div>
+          </div>
+
+          <!-- Work Type -->
+          <div class="flex flex-col text-light-200">
+            <span class="font-semibold text-light-100 mb-0.5">Work Type:</span>
+            <div class="flex items-center">
+              <ng-icon name="ionBriefcaseOutline" class="w-4 h-4 mr-1"></ng-icon>
+              {{ job.type }}
+            </div>
+          </div>
+
+          <!-- Salary -->
+          <div class="flex flex-col text-light-200">
+            <span class="font-semibold text-light-100 mb-0.5">Salary:</span>
+            <div class="flex items-center">
+              <ng-icon name="ionCashOutline" class="w-4 h-4 mr-1"></ng-icon>
+              {{ job.salaryRange || "Competitive" }}
+            </div>
+          </div>
+
+          <!-- Posted Date -->
+          <div class="flex flex-col text-light-200">
+            <span class="font-semibold text-light-100 mb-0.5">Posted:</span>
+            <div class="flex items-center">
+              <ng-icon name="ionCalendarOutline" class="w-4 h-4 mr-1"></ng-icon>
+              {{ job.postedDate | date : "shortDate" }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-3 flex justify-end">
+        <button
+          class="bg-light-100 text-primary px-3 py-1.5 rounded-md text-sm hover:bg-light-200 transition-colors"
+        >
+          Apply Now
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,178 @@
+<!-- portfolio-upload.component.html -->
+<div class="p-4 sm:p-6 max-w-7xl mx-auto space-y-6 bg-gray-900 rounded-xl shadow-lg">
+  <!-- Header -->
+  <h2 *ngIf="!selectedCard" class="text-2xl sm:text-3xl text-light-100 font-semibold italic">
+    <strong><ng-icon name="ionNotifications" class="text-2xl"></ng-icon></strong>
+    Notifications
+  </h2>
+
+  <!-- Main Content -->
+  <div *ngIf="!selectedCard" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Interview Alerts -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <h3 class="text-xl sm:text-2xl flex flex-row gap-2 items-center text-light-100">
+          <strong>
+            <ng-icon name="ionCalendar" class="text-lg"></ng-icon>
+            Interview Alerts
+          </strong>
+        </h3>
+      </div>
+
+      <div *ngIf="interviewAlerts.length; else noInterviews" class="space-y-3">
+        <div 
+          *ngFor="let alert of interviewAlerts"
+          class="p-4 bg-gray-800 rounded-lg border border-gray-700 cursor-pointer hover:border-green-400 transition-colors duration-200"
+          (click)="showCardDetails('interview', alert)"
+        >
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-lg font-medium text-light-100">{{ alert.position }}</p>
+              <p class="text-sm text-light-200/80">{{ alert.company }}</p>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium text-green-400 bg-green-500/10 rounded-full">
+              Interview
+            </span>
+          </div>
+          <div class="mt-3 flex items-center gap-2 text-sm text-gray-400">
+            <ng-icon name="ionTimeOutline" class="text-green-400"></ng-icon>
+            {{ alert.date | date:'MMM d, y - h:mm a' }}
+          </div>
+        </div>
+      </div>
+      <ng-template #noInterviews>
+        <p class="text-gray-400 text-sm">No upcoming interviews</p>
+      </ng-template>
+    </section>
+
+    <!-- Job Matches -->
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <h3 class="text-xl sm:text-2xl text-light-100 font-semibold">
+          <strong><ng-icon name="ionBriefcase" class="text-lg"></ng-icon></strong>
+          Job Matches
+        </h3>
+      </div>
+
+      <div *ngIf="sortedJobMatches.length; else noJobs" class="space-y-3">
+        <div 
+          *ngFor="let job of sortedJobMatches"
+          class="p-4 bg-gray-800 rounded-lg border border-gray-700 cursor-pointer hover:border-yellow-400 transition-colors duration-200"
+          (click)="showCardDetails('job', job)"
+        >
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-lg font-medium text-light-100">{{ job.title }}</p>
+              <p class="text-sm text-gray-300">{{ job.company }}</p>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium text-yellow-400 bg-yellow-500/10 rounded-full">
+              {{ job.match }}% Match
+            </span>
+          </div>
+          <div class="mt-3 flex items-center gap-2 text-sm text-gray-400">
+            <ng-icon name="ionTimeOutline" class="text-yellow-400"></ng-icon>
+            Posted {{ job.postedDate | date:'MMM d' }}
+          </div>
+        </div>
+      </div>
+      <ng-template #noJobs>
+        <p class="text-gray-400 text-sm">No new job matches</p>
+      </ng-template>
+    </section>
+  </div>
+
+  <!-- Detailed View -->
+  <div *ngIf="selectedCard" class="animate-fade-in">
+    <!-- Interview Details -->
+    <div *ngIf="selectedCard.type === 'interview'" class="max-w-2xl mx-auto">
+      <div class="bg-gray-800 rounded-lg border border-green-400 p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="text-2xl font-bold text-light-100">{{ selectedCard.data.position }}</h3>
+            <p class="text-light-200/80 mt-1">{{ selectedCard.data.company }}</p>
+          </div>
+          <button 
+            (click)="closeCardDetails()"
+            class="text-gray-400 cursor-pointer hover:text-light-100 transition-colors"
+          >
+            <ng-icon name="ionClose" class="text-2xl"></ng-icon>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-sm">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-gray-400">Interview Date</p>
+              <p class="text-light-100">{{ selectedCard.data.date | date:'MMM d, y - h:mm a' }}</p>
+            </div>
+            <div>
+              <p class="text-gray-400">Location</p>
+              <p class="text-light-100">{{ selectedCard.data.location }}</p>
+            </div>
+            <div *ngIf="selectedCard.data.meetingLink" class="col-span-2">
+              <p class="text-gray-400">Meeting Link</p>
+              <a 
+                [href]="selectedCard.data.meetingLink"
+                target="_blank"
+                class="inline-flex items-center gap-2 text-green-400 hover:text-green-300"
+              >
+                <ng-icon name="ionVideocam"></ng-icon>
+                Join Virtual Meeting
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Details -->
+    <div *ngIf="selectedCard.type === 'job'" class="max-w-2xl mx-auto">
+      <div class="bg-gray-800 rounded-lg border border-yellow-400 p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="text-2xl font-bold text-light-100">{{ selectedCard.data.title }}</h3>
+            <p class="text-gray-300 mt-1">{{ selectedCard.data.company }}</p>
+          </div>
+          <button 
+            (click)="closeCardDetails()"
+            class="bg-light-100/70 justify-center p-1 rounded-lg cursor-pointer text-gray-50 hover:text-light-100 transition-colors"
+          >
+            <ng-icon name="ionClose" class="text-2xl"></ng-icon>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-sm">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-gray-400">Posted Date</p>
+              <p class="text-light-100">{{ selectedCard.data.postedDate | date:'MMM d, y' }}</p>
+            </div>
+            <div>
+              <p class="text-gray-400">Application Deadline</p>
+              <p class="text-light-100">{{ selectedCard.data.deadline | date:'MMM d, y' }}</p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-gray-400">Match Score</p>
+              <p class="text-yellow-400 font-medium">{{ selectedCard.data.match }}%</p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-gray-400">Job Description</p>
+              <p class="text-light-100 leading-relaxed">{{ selectedCard.data.description }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="selectedCard.data.applyLink" class="mt-6">
+            <a 
+              [href]="selectedCard.data.applyLink"
+              target="_blank"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 text-gray-900 rounded-lg hover:bg-yellow-600 transition-colors"
+            >
+              <ng-icon name="ionDocumentAttach"></ng-icon>
+              Apply Now
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+/* querry-database.component.css */
+
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
+.dot-flashing {
+  display: flex;
+  gap: 4px;
+}
+
+.dot-flashing div {
+  animation: dotFlashing 1s infinite linear alternate;
+}
+
+.dot-flashing div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot-flashing div:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotFlashing {
+  0% { opacity: 0.2; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-2px); }
+  100% { opacity: 0.2; transform: translateY(0); }
+}
+
+textarea {
+  min-height: 44px;
+  max-height: 150px;
+  transition: all 0.2s ease;
+}
+
+@media (max-width: 360px) {
+  .text-xs {
+    font-size: 0.65rem;
+  }
+  .chat-input {
+    padding-right: 3.5rem;
+  }
+}
+

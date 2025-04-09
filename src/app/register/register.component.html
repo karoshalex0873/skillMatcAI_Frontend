@@ -1,0 +1,196 @@
+<!-- register.component.html -->
+<div class="min-h-screen bg-primary flex items-center justify-center p-4">
+  <div class="bg-dark-100 pt-20 rounded-xl shadow-lg p-6 w-full max-w-md">
+    <h2 class="text-2xl font-semibold text-light-100 mb-6 text-center">
+      Create Account
+    </h2>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <!-- Name Field -->
+      <div>
+        <label class="block text-light-200 text-sm mb-1">Full Name</label>
+        <input
+          type="text"
+          formControlName="name"
+          class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200 transition-all"
+        />
+        <div
+          *ngIf="
+            registerForm.get('name')?.invalid &&
+            registerForm.get('name')?.touched
+          "
+          class="text-red-400 mt-1 text-xs"
+        >
+          Name is required
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div>
+        <label class="block text-light-200 text-sm mb-1">Email</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200 transition-all"
+        />
+        <div
+          *ngIf="
+            registerForm.get('email')?.invalid &&
+            registerForm.get('email')?.touched
+          "
+          class="text-red-400 mt-1 text-xs"
+        >
+          Valid email required
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <label class="block text-light-200 text-sm mb-1">Password</label>
+        <div class="relative">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            (input)="onPasswordChange($event)"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200 transition-all pr-10"
+          />
+          <button
+            type="button"
+            (click)="togglePasswordVisibility('password')"
+            class="absolute right-3 top-2.5 text-light-200 hover:text-light-100"
+          >
+            <ng-icon
+              [name]="showPassword ? 'ionEyeOff' : 'ionEye'"
+              class="w-5 h-5"
+            ></ng-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div>
+        <label class="block text-light-200 text-sm mb-1"
+          >Confirm Password</label
+        >
+        <div class="relative">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200 transition-all pr-10"
+          />
+          <button
+            type="button"
+            (click)="togglePasswordVisibility('confirmPassword')"
+            class="absolute right-3 top-2.5 text-light-200 hover:text-light-100"
+          >
+            <ng-icon
+              [name]="showConfirmPassword ? 'ionEyeOff' : 'ionEye'"
+              class="w-5 h-5"
+            ></ng-icon>
+          </button>
+        </div>
+        <div
+          *ngIf="registerForm.hasError('mismatch')"
+          class="text-red-400 mt-1 text-xs"
+        >
+          Passwords do not match
+        </div>
+      </div>
+
+      <!-- Role Selection -->
+      <div>
+        <label class="block text-light-200 text-sm mb-2">Register As</label>
+        <div class="grid grid-cols-3 gap-2">
+          <label
+            *ngFor="let role of roles"
+            class="flex items-center justify-center p-1 rounded-lg cursor-pointer transition-all"
+            [ngClass]="{
+              'bg-primary border-2 border-light-200':
+                registerForm.get('role')?.value == role.value,
+              'bg-dark-200 border-2 border-gray-700 hover:border-gray-600':
+                registerForm.get('role')?.value != role.value
+            }"
+          >
+            <input
+              type="radio"
+              formControlName="role"
+              [value]="role.value"
+              class="hidden"
+            />
+            <span class="text-light-100 text-sm">{{ role.label }}</span>
+          </label>
+        </div>
+        <div
+          *ngIf="
+            registerForm.get('role')?.invalid &&
+            registerForm.get('role')?.touched
+          "
+          class="text-red-400 mt-1 text-xs"
+        >
+          Please select a role
+        </div>
+      </div>
+
+      <!-- Terms & Conditions -->
+      <div class="flex items-start space-x-2 pt-2">
+        <input
+          type="checkbox"
+          formControlName="termsAndConditions"
+          id="terms"
+          class="mt-0.5 w-4 h-4 rounded border-gray-600 text-light-100 focus:ring-light-200 bg-primary"
+        />
+        <label for="terms" class="text-light-200 text-xs leading-tight">
+          I agree to the
+          <a href="#" class="text-light-100 hover:text-light-200 underline"
+            >Terms of Service</a
+          >
+          and
+          <a href="#" class="text-light-100 hover:text-light-200 underline"
+            >Privacy Policy</a
+          >
+        </label>
+      </div>
+
+
+      <!-- inavlid error -->
+      <div
+        *ngIf="
+          registerForm.get('termsAndConditions')?.invalid &&
+          registerForm.get('termsAndConditions')?.touched
+        "
+        class="text-red-400 text-xs -mt-2"
+      >
+        You must accept the terms and conditions
+      </div>
+
+      <!-- Error display -->
+      <div
+        *ngIf="errorMessage"
+        class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"
+      >
+        {{ errorMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="w-full bg-light-100 text-primary text-sm py-2 rounded-lg hover:bg-light-200 transition-colors font-medium mt-4"
+        [disabled]="!registerForm.valid"
+      >
+        Create Account
+      </button>
+    </form>
+
+    <!-- Login Link -->
+    <div class="mt-6 text-center">
+      <p class="text-light-200 text-xs cursor-pointer">
+        Already have an account?
+        <a
+          routerLink="/login"
+          class="text-light-100 hover:text-light-200 underline"
+          >Login here</a
+        >
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,217 @@
+<!-- hire-analytics.component.html -->
+<div
+  class="flex flex-col h-full bg-dark-100 p-6 rounded-xl border border-light-100/20"
+>
+  <!-- Header -->
+  <div
+    class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4"
+  >
+    <div>
+      <h2 class="text-2xl font-bold text-light-100">Hiring Analytics</h2>
+      <p class="text-light-200 mt-1">
+        Key metrics and insights about your hiring process
+      </p>
+    </div>
+    <div class="flex items-center gap-3">
+      <select
+        class="bg-dark-100/80 border border-light-100/20 rounded-lg px-3 py-2 text-light-100"
+      >
+        <option>Last 30 Days</option>
+        <option>Last Quarter</option>
+        <option>Year to Date</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Metrics Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <!-- Total Hires -->
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
+    >
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-light-200 text-sm">Total Hires</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">142</p>
+        </div>
+        <div class="p-2 bg-primary/20 rounded-lg">
+          <ng-icon name="ionPeople" class="text-2xl text-primary"></ng-icon>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mt-3">
+        <span class="text-green-400 text-sm flex items-center">
+          <ng-icon name="ionArrowUp"></ng-icon> 12%
+        </span>
+        <span class="text-light-200 text-sm">vs last period</span>
+      </div>
+    </div>
+
+    <!-- Open Positions -->
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
+    >
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-light-200 text-sm">Open Positions</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">24</p>
+        </div>
+        <div class="p-2 bg-purple-500/20 rounded-lg">
+          <ng-icon
+            name="ionBriefcase"
+            class="text-2xl text-purple-400"
+          ></ng-icon>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mt-3">
+        <span class="text-red-400 text-sm flex items-center">
+          <ng-icon name="ionArrowDown"></ng-icon> 5%
+        </span>
+        <span class="text-light-200 text-sm">vs last month</span>
+      </div>
+    </div>
+
+    <!-- Avg. Time to Hire -->
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
+    >
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-light-200 text-sm">Avg. Time to Hire</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">34d</p>
+        </div>
+        <div class="p-2 bg-blue-500/20 rounded-lg">
+          <ng-icon
+            name="ionSpeedometer"
+            class="text-2xl text-blue-400"
+          ></ng-icon>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mt-3">
+        <span class="text-green-400 text-sm flex items-center">
+          <ng-icon name="ionArrowUp"></ng-icon> 8%
+        </span>
+        <span class="text-light-200 text-sm">faster</span>
+      </div>
+    </div>
+
+    <!-- Candidate Sources -->
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
+    >
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-light-200 text-sm">Applications</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">384</p>
+        </div>
+        <div class="p-2 bg-green-500/20 rounded-lg">
+          <ng-icon
+            name="ionDocumentText"
+            class="text-2xl text-green-400"
+          ></ng-icon>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 mt-3">
+        <span class="text-green-400 text-sm flex items-center">
+          <ng-icon name="ionArrowUp"></ng-icon> 22%
+        </span>
+        <span class="text-light-200 text-sm">more candidates</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
+    <!-- Hiring Trends Chart -->
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
+    >
+      <h3 class="text-lg font-semibold text-light-100 mb-4">Hiring Trends</h3>
+      <div class="h-64">
+        <canvas #hiringTrendsChart></canvas>
+      </div>
+    </div>
+
+    <!-- Candidate Sources Chart -->
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
+    >
+      <h3 class="text-lg font-semibold text-light-100 mb-4">
+        Candidate Sources
+      </h3>
+      <div class="h-64">
+        <canvas #sourcesChart></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Tables Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+    <!-- Recent Applications -->
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
+    >
+      <h3 class="text-lg font-semibold text-light-100 mb-4">
+        Recent Applications
+      </h3>
+      <div class="overflow-auto">
+        <table class="w-full">
+          <thead>
+            <tr
+              class="text-light-200 text-left text-sm border-b border-light-100/20"
+            >
+              <th class="pb-3">Candidate</th>
+              <th class="pb-3">Position</th>
+              <th class="pb-3">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let application of recentApplications"
+              class="text-light-100 text-sm hover:bg-dark-100/30"
+            >
+              <td class="py-3">{{ application.name }}</td>
+              <td>{{ application.position }}</td>
+              <td>
+                <span
+                  class="px-2 py-1 rounded-full text-xs"
+                  [class.bg-green-500]="application.status === 'Hired'"
+                  [class.bg-blue-500]="application.status === 'In Process'"
+                  [class.bg-red-500]="application.status === 'Rejected'"
+                  [class.text-green-400]="application.status === 'Hired'"
+                  [class.text-blue-400]="application.status === 'In Process'"
+                  [class.text-red-400]="application.status === 'Rejected'"
+                >
+                  {{ application.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Upcoming Interviews -->
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
+    >
+      <h3 class="text-lg font-semibold text-light-100 mb-4">
+        Upcoming Interviews
+      </h3>
+      <div class="space-y-3">
+        <div
+          *ngFor="let interview of upcomingInterviews"
+          class="flex items-center justify-between p-3 hover:bg-dark-100/30 rounded-lg"
+        >
+          <div>
+            <p class="text-light-100 font-medium">{{ interview.candidate }}</p>
+            <p class="text-light-200 text-sm">{{ interview.position }}</p>
+          </div>
+          <div class="text-light-200 text-sm">
+            {{ interview.date }} <br />
+            {{ interview.time }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

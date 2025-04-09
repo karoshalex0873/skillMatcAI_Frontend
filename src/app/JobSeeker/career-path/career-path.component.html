@@ -1,0 +1,155 @@
+<!-- career-path.component.html -->
+<div
+  class="p-6 max-w-4xl mx-auto bg-primary rounded-xl shadow-lg space-y-8 h-[70vh] overflow-auto"
+>
+  <!-- Header -->
+  <div class="text-center">
+    <h2 class="text-xl font-semibold text-light-100 mb-2">
+      <span class="text-lg"><ng-icon name="ionRocket"></ng-icon></span>
+      AI-Powered Learning Path
+    </h2>
+    <p class="text-light-200">Get a personalized roadmap based on your goals</p>
+  </div>
+
+  <!-- Skill Search -->
+  <div class="space-y-4">
+    <!-- skills input -->
+    <div class="bg-light-100/30 p-4 rounded-lg">
+      <h3 class="text-lg font-medium text-light-100 mb-3">
+        1. What skills do you have?
+      </h3>
+      <input
+        type="text"
+        class="w-full p-2 border rounded-lg text-light-100/60"
+        placeholder="Search skills (e.g., Python, React)"
+        (input)="searchSkills($event)"
+      />
+      <div class="mt-3 flex flex-wrap gap-2">
+        <div
+          *ngFor="let skill of selectedSkills"
+          class="bg-blue-100 text-blue-800 px-3 py-1 rounded-md"
+        >
+          {{ skill }}
+          <button (click)="removeSkill(skill)" class="ml-2 text-blue-600">
+            ×
+          </button>
+        </div>
+      </div>
+      <div
+        *ngIf="skillSuggestions.length"
+        class="mt-3 border  z-50 max-w-sm w-full mr-20 rounded-lg bg-primary/80 text-light-100 backdrop-blur-md flex flex-col px-2"
+      >
+        <div
+          *ngFor="let skill of skillSuggestions"
+          class="p-2 hover:bg-light-100/20 cursor-pointer rounded-md"
+          (click)="addSkill(skill)"
+        >
+          {{ skill }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Career Goals -->
+    <div class="bg-light-100/30 p-4 rounded-lg">
+      <h3 class="text-lg font-medium text-light-100 mb-3">2. Career Goal</h3>
+      <select
+        class="w-full p-2 border rounded-lg text-light-200/60"
+        [(ngModel)]="selectedGoal"
+      >
+        <option
+          class="bg-primary/80 backdrop-blur-md text-light-100"
+          *ngFor="let goal of careerGoals"
+          [value]="goal.id"
+        >
+        {{ goal.title }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Time Commitment -->
+    <div class="bg-light-100/30 p-4 rounded-lg">
+      <h3 class="text-lg font-medium text-light-100 mb-3">
+        3. Weekly Study Time
+      </h3>
+      <div class="grid grid-cols-4 gap-3">
+        <button
+          *ngFor="let option of timeOptions"
+          class="p-2 rounded-lg  border"
+          [class.bg-light-100]="selectedTime === option.value"
+          [class.text-dark-100]="selectedTime === option.value"
+          (click)="selectedTime = option.value"
+        >
+          {{ option.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Generate Button -->
+    <button
+      class="py-3 px-5 bg-light-100 text-dark-100  text-lg rounded-lg font-semibold italic w-fit cursor-pointer"
+      (click)="generateLearningPath()"
+      [disabled]="!canGenerate"
+    >
+      Generate Path
+    </button>
+  </div>
+
+  <!-- Learning Path -->
+  <div *ngIf="learningPath" class="space-y-6 bg-dark-100/30 px-3 py-4 rounded-lg">
+    <div class="flex justify-between items-center">
+      <h3 class="text-xl font-semibold  text-light-100">Your Learning Plan</h3>
+      <button
+        class="text-light-100  cursor-pointer "
+        (click)="learningPath = undefined"
+      >
+        <span class="text-2xl"><ng-icon name="ionRefresh"></ng-icon></span>
+      </button>
+    </div>
+
+    <!-- Timeline -->
+    <div class="space-y-6">
+      <div
+        *ngFor="let milestone of learningPath.milestones"
+        class="bg-primary p-4 rounded-lg"
+      >
+        <div class="flex items-center gap-3 mb-3">
+          <div
+            class="w-8 h-8 bg-light-100 text-dark-100 rounded-full flex items-center justify-center"
+          >
+            {{ milestone.week }}
+          </div>
+          <h4 class="text-lg font-medium text-light-200">
+            {{ milestone.title }}
+          </h4>
+        </div>
+        <p class="text-light-200 mb-4">{{ milestone.description }}</p>
+
+        <div class="space-y-3">
+          <div
+            *ngFor="let resource of milestone.resources"
+            class="p-3 bg-light-100/80 backdrop-blur-md rounded-lg border"
+          >
+            <a
+              [href]="resource.link"
+              target="_blank"
+              class="italic text-sm underline"
+            >
+              {{ resource.title }}
+            </a>
+            <p class="text-sm text-dark-100 mt-1">{{ resource.type }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-8">
+    <div
+      class="animate-spin inline-block w-8 h-8 border-4 border-light-100 rounded-full border-t-transparent"
+    ></div>
+    <p class="mt-3 text-gray-600">
+      Generating your personalized learning path...
+    </p>
+  </div>
+</div>

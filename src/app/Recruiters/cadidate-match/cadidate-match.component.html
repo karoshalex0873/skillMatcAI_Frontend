@@ -1,0 +1,93 @@
+<p class="text-light-100 text-xl font-semibold mb-4">Candidate Matches</p>
+
+<div class="bg-light-100/20 w-full border border-light-100/20 p-4 rounded-xl">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div
+      *ngFor="let applicant of applicants"
+      class="bg-dark-100/50 backdrop-blur-md rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow duration-300 group"
+    >
+      <!-- Top section -->
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex flex-col space-y-1">
+          <h3 class="text-light-100 text-lg font-bold transition-colors">
+            {{ applicant.position }}
+          </h3>
+          <p class="text-light-200 text-sm italic">{{ applicant.name }}</p>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="h-px bg-light-100/20 rounded w-full my-3"></div>
+
+      <!-- Skills -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <span
+          class="px-3 py-1 bg-primary/10 text-light-100 border-light-100 text-xs font-medium rounded-full"
+        >
+          {{ applicant.skills }}
+        </span>
+      </div>
+
+      <!-- Resume and Cover Letter -->
+      <div class="text-light-200 text-sm space-y-2 mb-4">
+        <p class="flex items-center gap-2">
+          <ng-icon
+            name="ionDocumentText"
+            class="text-primary text-base"
+          ></ng-icon>
+          {{ applicant.resume }}
+        </p>
+        <p class="flex items-center gap-2">
+          <ng-icon name="ionMailOpen" class="text-primary text-base"></ng-icon>
+          {{applicant.coverLetter }}
+        </p>
+      </div>
+
+      <!-- Hire Button -->
+      <button
+        (click)="openHireModal(applicant)"
+        class="mt-auto w-full py-2 bg-light-100 text-dark-100 rounded-md transition"
+      >
+        Hire
+      </button>
+    </div>
+  </div>
+
+  <!-- Hire Modal -->
+  <div *ngIf="selectedApplicant" class=" max-w-xs absolute  rounded-md z-50 -translate-y-64 bg-light-100/10 backdrop-blur-md">
+    <div
+      class="bg-dark-200 text-dark-100 rounded-xl w-full max-w-md p-6 shadow-lg relative"
+    >
+      <h2 class="text-xl font-semibold mb-4">
+        Hire {{ selectedApplicant.name }}
+      </h2>
+
+      <p class="mb-2">
+        <strong>Position:</strong> {{ selectedApplicant.position }}
+      </p>
+      <p class="mb-2">
+        <strong>Skills:</strong> {{ selectedApplicant.skills }}
+      </p>
+      <p class="mb-4">
+        <strong>Cover Letter:</strong> {{ selectedApplicant.coverLetter }}
+      </p>
+
+      <!-- Buttons -->
+      <div class="flex justify-end gap-2">
+        <button
+          (click)="closeHireModal()"
+          class="px-4 py-2 rounded-md bg-light-100 text-dark-100 hover:bg-light-200 transition"
+        >
+          Cancel
+        </button>
+
+        <button
+          (click)="confirmHire()"
+          class="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/80 transition"
+        >
+          Confirm Hire
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

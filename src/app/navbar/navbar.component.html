@@ -1,0 +1,138 @@
+<nav class="bg-primary/20 backdrop-blur-md fixed w-full z-50 shadow-xl">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-20">
+      <!-- Logo Section -->
+      <a
+        routerLink="/"
+        class="flex items-center gap-3 hover:opacity-80 transition-opacity"
+      >
+        <ng-icon
+          name="ionRocketOutline"
+          class="nav-icon"></ng-icon>
+        <h1 class="text-2xl font-bold text-light-100 font-orbitron">
+          SkillMatch AI
+        </h1>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-8">
+        <a
+          routerLink=""
+          class="nav-link group"
+          routerLinkActive="text-light-100 border-b-2 border-light-100"
+        >
+          <ng-icon name="ionHomeOutline" class="nav-icon"></ng-icon>
+          <span class="nav-text">Home</span>
+        </a>
+
+        <a
+          routerLink="/jobs"
+          class="nav-link group"
+          routerLinkActive="text-light-100 border-b-2 border-light-100"
+        >
+          <ng-icon name="ionBriefcase" class="nav-icon"></ng-icon>
+          <span class="nav-text">Find Job</span>
+        </a>
+
+        <a
+          routerLink="/hire"
+          class="nav-link group"
+          routerLinkActive="text-light-100 border-b-2 border-light-100"
+        >
+          <ng-icon name="ionPeople" class="nav-icon"></ng-icon>
+          <span class="nav-text">Hire Talent</span>
+        </a>
+      </div>
+
+      <!-- Auth Section -->
+      <div class="hidden md:flex items-center gap-4">
+        <a
+          routerLink="/login"
+          class="auth-btn cursor-pointer"
+          routerLinkActive="bg-light-100/10"
+        >
+          <ng-icon name="ionLogInOutline" class="auth-icon"></ng-icon>
+          <span>Sign In</span>
+        </a>
+        <a
+          routerLink="/register"
+          class="auth-btn bg-light-100 text-primary hover:bg-light-200"
+        >
+          <ng-icon name="ionPaperPlane" class="auth-icon"></ng-icon>
+          <span>Get Started</span>
+        </a>
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <button
+        class="md:hidden text-light-100"
+        (click)="toggleMenu()"
+        aria-label="Toggle navigation menu"
+      >
+        <ng-icon
+          [name]="isMenuOpen ? 'ionCloseOutline' : 'ionMenuOutline'"
+          class="text-3xl"
+        ></ng-icon>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div
+      class="md:hidden overflow-hidden transition-all duration-300"
+      [class.max-h-0]="!isMenuOpen"
+      [class.max-h-96]="isMenuOpen"
+    >
+      <div class="pt-4 pb-6 space-y-4">
+        <a
+          routerLink="/home"
+          class="mobile-nav-link"
+          (click)="closeMenu()"
+          routerLinkActive="text-light-100 bg-dark-100"
+        >
+          <ng-icon name="ionHomeOutline" class="w-6 h-6"></ng-icon>
+          Home
+        </a>
+
+        <a
+          routerLink="/jobs"
+          class="mobile-nav-link"
+          (click)="closeMenu()"
+          routerLinkActive="text-light-100 bg-dark-100"
+        >
+          <ng-icon name="ionBriefcase" class="w-6 h-6"></ng-icon>
+          Find Job
+        </a>
+
+        <a
+          routerLink="/hire"
+          class="mobile-nav-link"
+          (click)="closeMenu()"
+          routerLinkActive="text-light-100 bg-dark-100"
+        >
+          <ng-icon name="ionPeople" class="w-6 h-6"></ng-icon>
+          Hire Talent
+        </a>
+
+        <div class="border-t border-light-100/20 pt-4">
+          <a
+            routerLink="/login"
+            class="mobile-nav-link"
+            (click)="closeMenu()"
+            routerLinkActive="text-light-100 bg-dark-100"
+          >
+            <ng-icon name="ionLogInOutline" class="w-6 h-6"></ng-icon>
+            Sign In
+          </a>
+          <a
+            routerLink="/register"
+            class="mobile-nav-link bg-light-100 text-primary hover:bg-light-200"
+            (click)="closeMenu()"
+          >
+            <ng-icon name="ionPaperPlane" class="w-6 h-6"></ng-icon>
+            Get Started
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
