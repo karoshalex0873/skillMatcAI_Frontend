@@ -3,9 +3,7 @@ import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IconsModule } from '../../helpers/icons.module';
 import { Job } from '../../helpers/types';
-
-
-
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-job-posting',
@@ -15,6 +13,7 @@ import { Job } from '../../helpers/types';
 
 })
 export class JobPostingComponent {
+
 
   jobs: Job[] = [
       {
@@ -41,17 +40,17 @@ export class JobPostingComponent {
     this.isModalOpen = false;
   }
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,private route:ActivatedRoute) {
     this.jobForm = this.fb.group({
       title: ['', Validators.required],
       company: ['', Validators.required],
-      loaction: ['', Validators.required],
+      location: ['', Validators.required],
       salaryRange: ['', [Validators.required, this.validateSalaryRange]],
       type: ['', Validators.required],
       experienceLevel: ['', Validators.required],
       postedDate: [new Date().toISOString().split('T')[0], Validators.required],
       skills: this.fb.array([], Validators.required)
-    })
+    })    
   }
 
   // geting the skills

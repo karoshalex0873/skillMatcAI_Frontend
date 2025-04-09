@@ -3,36 +3,8 @@
   <app-navbar></app-navbar>
 
   <!-- Hero Section -->
-  <section class="py-20">
+  <section class="py-36">
     <div class="container mx-auto max-w-7xl">
-      <!-- Search Container -->
-      <div
-        class="max-w-2xl mx-auto mb-16 bg-light-100/20 rounded-full flex items-center px-6 py-4 shadow-lg"
-      >
-        <input
-          type="text"
-          placeholder="Find Your Dream Job..."
-          class="flex-1 bg-transparent text-light-100 placeholder-light-200 focus:outline-none px-4 text-lg"
-        />
-        <button class="text-light-200 hover:text-light-100 transition-colors">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-      </div>
-       
-
       <!-- Hero Content -->
       <div class="flex flex-col md:flex-row items-center gap-12">
         <div class="md:w-1/2 text-center md:text-left">
@@ -46,9 +18,10 @@
             just your resume.
           </p>
           <a
-            routerLink="/signup"
+            routerLink="/register"
             class="bg-light-100 text-primary hover:bg-light-200 text-lg font-semibold py-3 px-6 rounded-md shadow-lg transition duration-300"
-            >Get Started</a>
+            >Get Started</a
+          >
         </div>
         <div class="md:w-1/2 flex justify-center">
           <img
@@ -112,3 +85,5 @@
     }
   </style>
 </div>
+
+<router-outlet></router-outlet>

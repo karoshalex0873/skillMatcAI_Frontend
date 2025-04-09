@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
 import { IconsModule } from '../../helpers/icons.module';
 
 @Component({
   selector: 'app-dash-recruter',
-  imports: [CommonModule,RouterModule,RouterLink,IconsModule,RouterLinkActive],
+  imports: [CommonModule,RouterModule,RouterLink,IconsModule,RouterLinkActive,RouterOutlet],
   templateUrl: './dash-recruter.component.html',
   styleUrl: './dash-recruter.component.css'
 })

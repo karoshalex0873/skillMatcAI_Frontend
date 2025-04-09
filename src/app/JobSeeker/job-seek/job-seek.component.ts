@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
 import { IconsModule } from '../../helpers/icons.module';
 
 @Component({
   selector: 'app-job-seek',
-  imports: [CommonModule, RouterModule, RouterLink, IconsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterModule, RouterLink, IconsModule, RouterLink, RouterLinkActive,RouterOutlet],
   templateUrl: './job-seek.component.html',
   styleUrl: './job-seek.component.css'
 })

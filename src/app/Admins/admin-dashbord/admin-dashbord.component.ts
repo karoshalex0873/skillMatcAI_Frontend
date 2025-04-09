@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { IconsModule } from '../../helpers/icons.module';
-import {RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import {RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashbord',
-  imports: [CommonModule,IconsModule,RouterLink,RouterLinkActive,RouterModule],
+  imports: [CommonModule,IconsModule,RouterLink,RouterLinkActive,RouterModule,RouterOutlet],
   templateUrl: './admin-dashbord.component.html',
   styleUrl: './admin-dashbord.component.css'
 })
@@ -17,6 +17,11 @@ export class AdminDashbordComponent {
 
   isMobileMenuOpen = false;
   links = [
+    {
+      path: 'users',
+      label: 'Dashboard',
+      icon: 'ionSpeedometer'
+    },
     {
       path: 'users',
       label: 'Manage Users',

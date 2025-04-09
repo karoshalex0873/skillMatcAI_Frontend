@@ -32,15 +32,9 @@ export class RegisterComponent {
     termsAndConditions: new FormControl(false, [Validators.requiredTrue])
   }, { validators: this.passwordMatchValidator })
 
-  strengthBars = [
-    { active: false }, // Minimum length
-    { active: false }, // Lowercase letter
-    { active: false }, // Uppercase letter
-    { active: false }  // Number/Special char
-  ];
+ 
 
-  strengthLabel = 'Weak';
-  strengthLabelClass = 'text-red-500';
+
   passwordMatchValidator(control: AbstractControl) {
     const password = control.get('password')?.value;
     const confirmPassword = control.get('confirmPassword')?.value;
