@@ -56,7 +56,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-files
-          path: ./dist
+          path: ./dist/client/browser
 
       - name: Output Contents
         run: ls
