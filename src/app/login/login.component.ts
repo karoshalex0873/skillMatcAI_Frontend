@@ -9,7 +9,7 @@ import { AuthService } from '../service/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule,IconsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, IconsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -22,26 +22,29 @@ export class LoginComponent {
     rememberMe: new FormControl(false)
   });
 
- 
+
 
   onPasswordChange(event: Event) {
     const password = (event.target as HTMLInputElement).value;
   }
-constructor(
-  private authService:AuthService,
-  private router:Router
-){}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const formData={
-        email:this.loginForm.value.email,
-        password:this.loginForm.value.password,
-        rememberMe:this.loginForm.value.rememberMe
+      const formData = {
+        email: this.loginForm.value.email,
+        password: this.loginForm.value.password,
+        rememberMe: this.loginForm.value.rememberMe
       };
       this.authService.login(formData).subscribe({
-        next:(response:any)=>{
-          this.router.navigate([])
+        next: (response: any) => {
+          // redirect based on role
+          if(response.user.Role===1){
+            this.router.navigate(['/jobs/starts'])
+          }
         }
       })
     }
