@@ -1,21 +1,23 @@
 const core = require("@actions/core"); // input and output
-const exec = require("@actions/exec"); // uloading to S3
+const exec = require("@actions/exec"); // uploading to S3
 
-function run() {
-  // get inputs
-
+async function run() {
+  // Get inputs
   const bucket = core.getInput("bucket", { required: true });
   const bucketRegion = core.getInput("bucket-region", { required: true });
   const distFolder = core.getInput("dist-folder", { required: true });
-  // upload files to s3
 
+  // Upload files to S3
   const s3URI = `s3://${bucket}`;
-  exec.exec(`aws s3 sync ${distFolder} ${s3URI} -- region ${bucketRegion}`);
+  await exec.exec(`aws s3 sync ${distFolder} ${s3URI} --region ${bucketRegion}`);
 
-  // get url
+  // Get URL
   const websiteUrl = `http://${bucket}.s3-website-${bucketRegion}.amazonaws.com`;
-  // http://dkskillmatch.s3-website.eu-north-1.amazonaws.com/
+
+  // Set the output URL for use in subsequent steps
   core.setOutput("website-url", websiteUrl);
 }
 
-run();
+run().catch((error) => {
+  core.setFailed(error.message);
+});
