@@ -14,9 +14,10 @@ export interface Job {
   skills: string[];
   experienceLevel: string;
   postedDate: Date;
-  salaryRange?: string;
-  type: 'Full-time' | 'Part-time' | 'Contract' | 'Remote';
+  salaryRange: string;
+  type: string;
 }
+
 
 // application.interface.ts
 export interface Application {

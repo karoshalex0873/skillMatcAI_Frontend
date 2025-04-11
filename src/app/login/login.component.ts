@@ -18,7 +18,7 @@ export class LoginComponent {
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+    password: new FormControl('', [Validators.required,]),
     rememberMe: new FormControl(false)
   });
 
@@ -41,10 +41,14 @@ export class LoginComponent {
       };
       this.authService.login(formData).subscribe({
         next: (response: any) => {
-          // redirect based on role
-          if(response.user.Role===1){
-            this.router.navigate(['/jobs/starts'])
-          }
+          this.authService.setUser(response.user)
+
+          const role = response.user.Role;
+
+          if (role === 1) this.router.navigate(['/jobs/starts']);
+          if (role === 2) this.router.navigate(['/hire/postJob']);
+          if (role === 3) this.router.navigate(['/admin/users']);
+
         }
       })
     }

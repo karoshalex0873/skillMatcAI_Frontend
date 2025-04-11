@@ -20,13 +20,17 @@ import { ManageUsersComponent } from './Admins/manage-users/manage-users.compone
 import { SystemPerformanceComponent } from './Admins/system-performance/system-performance.component';
 import { AiAcurracyComponent } from './Admins/ai-acurracy/ai-acurracy.component';
 import { PlatformSecurityComponent } from './Admins/platform-security/platform-security.component';
+import { authGuard } from './helpers/Guards/auth.guard';
+import { roleGuard } from './helpers/Guards/role.guard';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
-    path: 'jobs', component: JobSeekComponent, children: [
+    path: 'jobs', component: JobSeekComponent,
+    canActivate:[authGuard,roleGuard(['1'])], 
+    children: [
       { path: 'starts', component: StatCardComponent },
       { path: 'aut', component: JobCardComponent },
       { path: 'applications', component: ApplicationItemComponent },
@@ -36,7 +40,9 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'hire', component: DashRecruterComponent, children: [
+    path: 'hire', component: DashRecruterComponent, 
+    canActivate:[authGuard,roleGuard(['2'])],
+    children: [
       { path: 'postJob', component: JobPostingComponent },
       { path: 'hireApplicants', component: CadidateMatchComponent },
       { path: 'querry', component: QuerryDatabaseComponent },
@@ -45,7 +51,9 @@ export const routes: Routes = [
     ]
   },
   {
-    path:'admin',component:AdminDashbordComponent,children:[
+    path:'admin',component:AdminDashbordComponent,
+    canActivate:[authGuard,roleGuard(['3'])],
+    children:[
       {path:'users',component:ManageUsersComponent},
       {path:'system',component:SystemPerformanceComponent},
       {path:'aiAccuracy',component:AiAcurracyComponent},

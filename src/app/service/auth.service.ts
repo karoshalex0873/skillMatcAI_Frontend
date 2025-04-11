@@ -6,19 +6,46 @@ import { environment } from '../helpers/environment';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl=environment.apiUrl
+  private apiUrl = environment.apiUrl
+
+  private currentUser: any = null;
 
 
-  constructor(private http:HttpClient) { }
 
-  register(userData:any){
-    return this.http.post(`${this.apiUrl}/auth/register`,userData,{
-      withCredentials:true
+  // Set user info after login
+  setUser(user: any) {
+    this.currentUser = user;
+  }
+
+  // Get user info (for roleGuard or other uses)
+  getUser() {
+    return this.currentUser;
+  }
+
+
+  constructor(private http: HttpClient) { }
+  // user register
+  register(userData: any) {
+    return this.http.post(`${this.apiUrl}/auth/register`, userData, {
+      withCredentials: true
     })
   }
-  login(userData:any){
-    return this.http.post(`${this.apiUrl}/auth/login`,userData,{
-      withCredentials:true
+  // user login
+  login(userData: any) {
+    return this.http.post(`${this.apiUrl}/auth/login`, userData, {
+      withCredentials: true
     })
+  }
+  // user logout
+  logout() {
+    return this.http.post(`${this.apiUrl}/auth/logout`, {}, {
+      withCredentials: true
+    })
+  }
+  // verify user
+  verifyAuth() {
+    return this.http.get<any>(`${this.apiUrl}/auth/verify`, {
+      withCredentials: true
+    });
   }
 }

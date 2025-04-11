@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { IconsModule } from '../../helpers/icons.module';
 import { Job } from '../../helpers/types';
+import { JobService } from '../../service/job.service';
 
 @Component({
   selector: 'app-job-card',
@@ -11,20 +12,16 @@ import { Job } from '../../helpers/types';
 })
 export class JobCardComponent {
   // properties for job card
-  jobs: Job[] = [
-    {
-      id: '1',
-      title: 'Senior UX Designer',
-      company: 'Tech Innovators Inc',
-      location: 'Remote',
-      matchPercentage: 72,
-      skills: ['Figma', 'User Research', 'Prototyping'],
-      experienceLevel: 'Senior',
-      postedDate: new Date('2024-03-15'),
-      salaryRange: '$100k - $130k',
-      type: 'Full-time'
-    },
-  ];
+  jobs: Job[] = []
+  
+  constructor(private jobService:JobService){}
+
+  ngOnInit():void{
+    this.jobService.getJob().subscribe({
+      next:(data)=>(this.jobs=data),
+      error:(err)=>console.error('failed to fetch jobs:',err)
+    })
+  }
 
   getMatchColor(percentage: number): string {
     if (percentage >= 85) return 'bg-green-400/20 text-green-400';

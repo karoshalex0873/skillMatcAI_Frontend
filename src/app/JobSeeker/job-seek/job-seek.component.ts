@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
 import { IconsModule } from '../../helpers/icons.module';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-job-seek',
@@ -12,6 +13,9 @@ import { IconsModule } from '../../helpers/icons.module';
 export class JobSeekComponent {
   // avatarUrl
   avatarUrl:string='assets/profile.png'
+
+  authService = inject(AuthService)
+  router = inject(Router);
 
   isMobileMenuOpen = false;
 
@@ -49,7 +53,14 @@ export class JobSeekComponent {
   ]
   //logout function
   logout() {
-    console.log('Logged out');
+    this.authService.logout().subscribe({
+      next:()=>{
+        this.router.navigate(['/login'])
+      },
+      error:(err)=>{
+        console.error('logout failed')
+      }
+    })
   }
 
 }
