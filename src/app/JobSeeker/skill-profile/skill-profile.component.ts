@@ -1,96 +1,171 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IconsModule } from '../../helpers/icons.module';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../service/auth.service';
+import { environment } from '../../helpers/environment';
+import { ProfileService } from '../../service/profile.service';
+import { finalize } from 'rxjs';
+
+
+interface UserProfile {
+  name: string;
+  email: string;
+  avatar?: string;
+  phone?: string;
+  bio?: string;
+  location?: string;
+  skills?: string[];
+  dob?: string;
+  gender?: string;
+  role?: string;
+  summary?: string;
+  experience?: number;
+}
 
 @Component({
   selector: 'app-skill-profile',
-  standalone:true,
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, IconsModule, FormsModule],
   templateUrl: './skill-profile.component.html',
   styleUrl: './skill-profile.component.css'
 })
-export class SkillProfileComponent {
-
+export class SkillProfileComponent implements OnInit {
   profileForm!: FormGroup;
+  completionPercentage: number = 0;
+  isLoading: boolean = false;
+  successMessage: string = '';
+  errorMessage: string = '';
 
-  get skillsFormArray() {
+
+  constructor(
+    private fb: FormBuilder,
+    private profileService: ProfileService
+  ) { }
+
+  ngOnInit() {
+    this.initializeForm();
+    this.loadUserProfile();
+  }
+
+  private initializeForm(): void {
+    this.profileForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.email]],
+      avatar: [''],
+      phone: [''],
+      bio: [''],
+      location: [''],
+      skills: this.fb.array([]),
+      dob: [''],
+      gender: [''],
+      role: [''],
+      summary: [''],
+      experience: [0, [Validators.min(0)]]
+    });
+  }
+
+  private loadUserProfile(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.profileService.getUserProfile()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (response) => this.handleProfileResponse(response),
+        error: (err) => this.handleProfileError(err)
+      });
+  }
+
+  private handleProfileResponse(response: any): void {
+    this.populateForm(response.data);
+    this.completionPercentage = response.completed || 0
+  }
+
+  private handleProfileError(error: Error): void {
+    this.errorMessage = error.message;
+  }
+
+  private populateForm(userData: UserProfile): void {
+    this.profileForm.patchValue({
+      name: userData.name || '',
+      email: userData.email || '',
+      avatar: userData.avatar || '',
+      phone: userData.phone || '',
+      bio: userData.bio || '',
+      location: userData.location || '',
+      dob: userData.dob || '',
+      gender: userData.gender || '',
+      role: userData.role || '',
+      summary: userData.summary || '',
+      experience: userData.experience || 0
+    });
+
+    if (userData.skills) {
+      this.setSkills(userData.skills);
+    }
+  }
+
+  private setSkills(skills: string[]): void {
+    const skillControls = skills.map(skill => this.fb.control(skill));
+    this.profileForm.setControl('skills', this.fb.array(skillControls));
+  }
+
+  get skillsFormArray(): FormArray {
     return this.profileForm.get('skills') as FormArray;
   }
 
-  constructor(private fb:FormBuilder){
-    this.profileForm=this.fb.group({
-      name:['',Validators.required],
-      email:[''],
-      role:[''],
-      location:[''],
-      summary:[''],
-      skills: this.fb.array([]),
-      experience: [0, [Validators.required, Validators.min(0)]]
-    })
-  }
-
-  addSkill(input: HTMLInputElement) {
+  addSkill(input: HTMLInputElement): void {
     const skill = input.value.trim();
-    if (skill) {
+    if (skill && !this.skillsFormArray.value.includes(skill)) {
       this.skillsFormArray.push(this.fb.control(skill));
       input.value = '';
     }
   }
-  removeSkill(index: number) {
+
+  removeSkill(index: number): void {
     this.skillsFormArray.removeAt(index);
   }
 
-  saveProfile() {
-    if (this.profileForm.valid) {
-      const formValue = this.profileForm.value;
-      console.log('Profile saved:', formValue);
-      // ... success message logic
+  saveProfile(): void {
+    if (this.profileForm.invalid) {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      return;
     }
-  }
 
-  profile = {
-    name: '',
-    email: '',
-    role: '',
-    location: '',
-    summary: '',
-    skills: [] as string[],
-    experience: 0,
-  };
-
-  skillsInput = '';
-  successMessage = '';
-
-  get completionPercentage(): number {
-    const totalFields = 6; // Update this number if you add/remove fields
-    let filledFields = 0;
-
-    if (this.profile.name.trim()) filledFields++;
-    if (this.profile.email.trim()) filledFields++;
-    if (this.profile.role.trim()) filledFields++;
-    if (this.profile.location.trim()) filledFields++;
-    if (this.profile.summary.trim()) filledFields++;
-    if (this.profile.skills.length > 0) filledFields++;
-    if (this.profile.experience > 0) filledFields++;
-
-    return Math.round((filledFields / totalFields) * 100);
-  }
-
-  updateSkills() {
-    if (this.skillsInput.trim()) {
-      const newSkills = this.skillsInput
-        .split(',')
-        .map(s => s.trim())
-        .filter(s => s.length > 0 && !this.profile.skills.includes(s));
-      this.profile.skills.push(...newSkills);
-      this.skillsInput = '';
-    }
-  }
-
-  clearForm() {
-    this.profileForm.reset();
-    this.skillsInput = '';
+    this.isLoading = true;
+    this.errorMessage = '';
     this.successMessage = '';
+
+    const formData = {
+      ...this.profileForm.value,
+      skills: this.skillsFormArray.value
+    };
+
+    this.profileService.updateUserProfile(formData)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (response) => this.handleSaveSuccess(response),
+        error: (err) => this.handleSaveError(err)
+      });
   }
+
+  private handleSaveSuccess(response: any): void {
+    this.successMessage = 'Profile updated successfully!';
+    this.completionPercentage = response.profileCompletion;
+    setTimeout(() => this.successMessage = '', 3000);
+  }
+
+  private handleSaveError(error: Error): void {
+    this.errorMessage = error.message;
+  }
+
+  clearForm(): void {
+    this.profileForm.reset();
+    this.skillsFormArray.clear();
+    this.successMessage = '';
+    this.errorMessage = '';
+  }
+
 }

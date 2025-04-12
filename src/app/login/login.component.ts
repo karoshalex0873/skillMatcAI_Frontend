@@ -33,6 +33,8 @@ export class LoginComponent {
   ) { }
 
   onSubmit() {
+    this.errorMessage = ''; 
+
     if (this.loginForm.valid) {
       const formData = {
         email: this.loginForm.value.email,
@@ -41,14 +43,20 @@ export class LoginComponent {
       };
       this.authService.login(formData).subscribe({
         next: (response: any) => {
-          this.authService.setUser(response.user)
+          this.authService.setUser(response.user, formData.rememberMe ?? false);
 
           const role = response.user.Role;
 
-          if (role === 1) this.router.navigate(['/jobs/starts']);
+          if (role === 1) this.router.navigate(['/jobs/aut']);
           if (role === 2) this.router.navigate(['/hire/postJob']);
           if (role === 3) this.router.navigate(['/admin/users']);
-
+        },
+        error: (error) => {
+          if (error.status === 401) {
+            this.errorMessage = 'Incorrect email or password';
+          } else {
+            this.errorMessage = 'Something went wrong. Please try again.';
+          }
         }
       })
     }

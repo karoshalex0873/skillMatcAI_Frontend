@@ -11,10 +11,11 @@ export class AuthService {
   private currentUser: any = null;
 
 
-
   // Set user info after login
-  setUser(user: any) {
+  setUser(user: any, remember: boolean = false) {
     this.currentUser = user;
+    const storage = remember ? localStorage : sessionStorage;
+    storage.setItem('user', JSON.stringify(user));
   }
 
   // Get user info (for roleGuard or other uses)
@@ -22,30 +23,57 @@ export class AuthService {
     return this.currentUser;
   }
 
+  //clear local storage
+  clearUser() {
+    this.currentUser = null;
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('user');
+  }
 
-  constructor(private http: HttpClient) { }
+
+  constructor(private http: HttpClient) { 
+    this.loadUserFromStorage();
+  }
+  
+
+  private loadUserFromStorage(){
+    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (storedUser) {
+      this.currentUser = JSON.parse(storedUser);
+    }
+  }
+
+
   // user register
   register(userData: any) {
     return this.http.post(`${this.apiUrl}/auth/register`, userData, {
       withCredentials: true
     })
   }
+
+
   // user login
   login(userData: any) {
     return this.http.post(`${this.apiUrl}/auth/login`, userData, {
       withCredentials: true
     })
   }
+
+
   // user logout
   logout() {
+    this.clearUser()
     return this.http.post(`${this.apiUrl}/auth/logout`, {}, {
       withCredentials: true
     })
   }
+
+
   // verify user
   verifyAuth() {
     return this.http.get<any>(`${this.apiUrl}/auth/verify`, {
       withCredentials: true
     });
   }
+  
 }
