@@ -60,7 +60,6 @@ export class SkillProfileComponent implements OnInit {
       skills: this.fb.array([]),
       dob: [''],
       gender: [''],
-      role: [''],
       summary: [''],
       experience: [0, [Validators.min(0)]]
     });
@@ -77,6 +76,8 @@ export class SkillProfileComponent implements OnInit {
         error: (err) => this.handleProfileError(err)
       });
   }
+
+  
 
   private handleProfileResponse(response: any): void {
     this.populateForm(response.data);
@@ -97,7 +98,6 @@ export class SkillProfileComponent implements OnInit {
       location: userData.location || '',
       dob: userData.dob || '',
       gender: userData.gender || '',
-      role: userData.role || '',
       summary: userData.summary || '',
       experience: userData.experience || 0
     });

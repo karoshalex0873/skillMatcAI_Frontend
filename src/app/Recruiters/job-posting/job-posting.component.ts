@@ -17,7 +17,7 @@ export class JobPostingComponent {
 
   jobs: Job[] = [
       {
-        id: '1',
+        job_id: 1,
         title: 'Senior UX Designer',
         company: 'Tech Innovators Inc',
         location: 'Remote',

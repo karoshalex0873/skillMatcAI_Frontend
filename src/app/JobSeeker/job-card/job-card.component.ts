@@ -3,24 +3,42 @@ import { Component } from '@angular/core';
 import { IconsModule } from '../../helpers/icons.module';
 import { Job } from '../../helpers/types';
 import { JobService } from '../../service/job.service';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-job-card',
-  imports: [CommonModule,IconsModule],
+  imports: [CommonModule,IconsModule,RouterModule],
   templateUrl: './job-card.component.html',
   styleUrl: './job-card.component.css'
 })
 export class JobCardComponent {
   // properties for job card
   jobs: Job[] = []
+  isLoading = true; // Add loading state
+  errorMessage: string = '';
   
-  constructor(private jobService:JobService){}
+  constructor(
+    private jobService:JobService,
+    private router:Router
+  ){}
 
-  ngOnInit():void{
+  ngOnInit(): void {
     this.jobService.getJob().subscribe({
-      next:(data)=>(this.jobs=data),
-      error:(err)=>console.error('failed to fetch jobs:',err)
-    })
+      next: (data) => {
+        this.jobs = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage=`Something went wrong ⚠`
+        console.error('Failed to fetch jobs:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  // applpy
+  applyForJob(job_id: number) {
+    this.router.navigate(['/application', job_id]);
   }
 
   getMatchColor(percentage: number): string {

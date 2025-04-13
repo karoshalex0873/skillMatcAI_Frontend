@@ -6,7 +6,7 @@ export interface Application {
 
 // interfaces/job.interface.ts
 export interface Job {
-  id: string;
+  job_id: number;
   title: string;
   company: string;
   location: string;

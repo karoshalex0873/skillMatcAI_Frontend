@@ -1,41 +1,69 @@
-<div class="bg-primary p-4 md:p-8 rounded-2xl max-w-3xl mx-auto space-y-6 md:space-y-8 overflow-auto h-[75vh] cursor-all-scroll hide-scrollbar">
+<div
+  class="bg-light-100/5 shadow-md backdrop-blur-md p-4 md:p-8 rounded-2xl max-w-3xl mx-auto space-y-6 md:space-y-8 overflow-auto h-[75vh] cursor-all-scroll hide-scrollbar"
+>
   <!-- Loading State -->
   <div *ngIf="isLoading" class="flex justify-center items-center h-full">
-    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    <div
+      class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"
+    ></div>
   </div>
 
   <!-- Content when not loading -->
   <div *ngIf="!isLoading">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <h2 class="text-xl md:text-2xl font-bold text-light-100">Skill Profile</h2>
+    <div
+      class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+    >
+      <h2 class="text-xl md:text-2xl font-bold text-light-100">
+        Skill Profile
+      </h2>
       <div class="flex items-center gap-2">
         <div class="w-24 h-2 bg-dark-100 rounded-full overflow-hidden">
-          <div 
-            class="h-full bg-light-100 border border-light-100/70 transition-all duration-500" 
+          <div
+            class="h-full bg-light-100 border border-light-100/70 transition-all duration-500"
             [style.width.%]="completionPercentage"
           ></div>
         </div>
         <span class="text-light-200 text-sm md:text-base">
-          <span class="text-gray-50 px-2 font-semibold text-lg">{{ completionPercentage }}%</span> complete
+          <span class="text-gray-50 px-2 font-semibold text-lg"
+            >{{ completionPercentage }}%</span
+          >
+          complete
         </span>
       </div>
     </div>
     <!-- Success Message -->
-    <div *ngIf="successMessage" class=" bg-green-900/30 p-3 rounded-lg border  border-light-100/50  text-center text-green-300 pt-3 md:pt-4 text-sm md:text-base">
+    <div
+      *ngIf="successMessage"
+      class="bg-green-900/30 p-3 rounded-lg border border-light-100/50 text-center text-green-300 pt-3 md:pt-4 text-sm md:text-base"
+    >
       {{ successMessage }}
     </div>
 
     <!-- Error Message -->
-    <div *ngIf="errorMessage" class="bg-red-900/30 p-3 rounded-lg border border-red-700/50 text-red-300 text-sm">
+    <div
+      *ngIf="errorMessage"
+      class="bg-red-900/30 p-3 rounded-lg border border-red-700/50 text-red-300 text-sm"
+    >
       {{ errorMessage }}
     </div>
 
-    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-6 md:space-y-8">
+    <form
+      [formGroup]="profileForm"
+      (ngSubmit)="saveProfile()"
+      class="space-y-6 md:space-y-8"
+    >
       <!-- Personal Section -->
-      <div class="space-y-4 md:space-y-6 border-b border-light-200/20 pb-4 md:pb-6">
-        <h3 class="text-base md:text-lg font-semibold text-light-100 flex items-center gap-2 md:gap-3">
-          <ng-icon name="ionPerson" class="text-primary text-lg md:text-xl"></ng-icon>
+      <div
+        class="space-y-4 md:space-y-6 border-b border-light-200/20 pb-4 md:pb-6"
+      >
+        <h3
+          class="text-base md:text-lg font-semibold text-light-100 flex items-center gap-2 md:gap-3"
+        >
+          <ng-icon
+            name="ionPerson"
+            class="text-primary text-lg md:text-xl"
+          ></ng-icon>
           Personal Information
         </h3>
 
@@ -48,92 +76,110 @@
             <input
               type="text"
               formControlName="name"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
               placeholder="John Doe"
             />
-            <div *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched" class="text-red-400 text-xs mt-1">
+            <div
+              *ngIf="
+                profileForm.get('name')?.invalid &&
+                profileForm.get('name')?.touched
+              "
+              class="text-red-400 text-xs mt-1"
+            >
               Name is required
             </div>
           </div>
 
           <!-- Email -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Email</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Email</label
+            >
             <input
               type="email"
               formControlName="email"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
               placeholder="john@example.com"
             />
-            <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="text-red-400 text-xs mt-1">
+            <div
+              *ngIf="
+                profileForm.get('email')?.invalid &&
+                profileForm.get('email')?.touched
+              "
+              class="text-red-400 text-xs mt-1"
+            >
               Please enter a valid email
             </div>
           </div>
 
           <!-- Avatar -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Profile Picture URL</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Profile Picture URL</label
+            >
             <input
               type="text"
               formControlName="avatar"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
               placeholder="https://example.com/avatar.jpg"
             />
           </div>
 
           <!-- Phone -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Phone Number</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Phone Number</label
+            >
             <input
               type="tel"
               formControlName="phone"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
-              placeholder="+1 (123) 456-7890"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
+              placeholder="+254701****89"
             />
           </div>
         </div>
       </div>
 
       <!-- Professional Section -->
-      <div class="space-y-4 md:space-y-6 border-b border-primary/20 pb-4 md:pb-6">
-        <h3 class="text-base md:text-lg font-semibold text-light-100 flex items-center gap-2 md:gap-3">
-          <ng-icon name="ionBriefcase" class="text-primary text-lg md:text-xl"></ng-icon>
+      <div
+        class="space-y-4 md:space-y-6 border-b border-primary/20 pb-4 md:pb-6"
+      >
+        <h3
+          class="text-base md:text-lg font-semibold text-light-100 flex items-center gap-2 md:gap-3"
+        >
+          <ng-icon name="ionBriefcase"></ng-icon>
           Professional Details
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <!-- Role -->
-          <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Job Role</label>
-            <input
-              type="text"
-              formControlName="role"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
-              placeholder="Software Engineer"
-            />
-          </div>
-
           <!-- Location -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Location</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Location</label
+            >
             <input
               type="text"
               formControlName="location"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
               placeholder="City, Country"
             />
           </div>
 
           <!-- Experience -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Years of Experience</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Years of Experience</label
+            >
             <input
               type="number"
               formControlName="experience"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
               min="0"
             />
-            <div *ngIf="profileForm.get('experience')?.invalid" class="text-red-400 text-xs mt-1">
+            <div
+              *ngIf="profileForm.get('experience')?.invalid"
+              class="text-red-400 text-xs mt-1"
+            >
               Minimum 0 years
             </div>
           </div>
@@ -141,19 +187,28 @@
       </div>
 
       <!-- Skills Section -->
-      <div class="space-y-4 md:space-y-6 border-b border-primary/20 pb-4 md:pb-6">
-        <h3 class="text-base md:text-lg font-semibold text-light-100 flex items-center gap-2 md:gap-3">
-          <ng-icon name="ionStatsChart" class="text-primary text-lg md:text-xl"></ng-icon>
+      <div
+        class="space-y-4 md:space-y-6 border-b border-primary/20 pb-4 md:pb-6"
+      >
+        <h3
+          class="text-base md:text-lg font-semibold text-light-100 flex items-center gap-2 md:gap-3"
+        >
+          <ng-icon
+            name="ionStatsChart"
+            class="text-primary text-lg md:text-xl"
+          ></ng-icon>
           Skills & Expertise
         </h3>
 
         <div class="space-y-2">
-          <label class="text-xs md:text-sm font-medium text-light-200">Technical Skills</label>
+          <label class="text-xs md:text-sm font-medium text-light-200"
+            >Technical Skills</label
+          >
           <div class="flex gap-2">
             <input
               #skillInput
               type="text"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
               placeholder="Add skill"
               (keyup.enter)="addSkill(skillInput)"
             />
@@ -185,35 +240,48 @@
 
       <!-- Additional Info Section -->
       <div class="space-y-4 md:space-y-6">
-        <h3 class="text-base md:text-lg font-semibold text-light-100 flex items-center gap-2 md:gap-3">
-          <ng-icon name="ionInformationCircle" class="text-primary text-lg md:text-xl"></ng-icon>
+        <h3
+          class="text-base md:text-lg font-semibold text-light-100 flex items-center gap-2 md:gap-3"
+        >
+          <ng-icon
+            name="ionInformationCircle"
+            class="text-primary text-lg md:text-xl"
+          ></ng-icon>
           Additional Information
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          
+
           <!-- Bio -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Bio</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Bio</label
+            >
             <textarea
               formControlName="bio"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 h-20 text-sm md:text-base"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 h-20 text-sm md:text-base"
               placeholder="A short bio about yourself"
             ></textarea>
           </div>
 
           <!-- Summary -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Professional Summary</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Professional Summary</label
+            >
             <textarea
               formControlName="summary"
-              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 h-20 text-sm md:text-base"
+              class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 placeholder:text-light-100/20 placeholder:italic focus:border-primary focus:ring-2 focus:ring-primary/20 h-20 text-sm md:text-base"
               placeholder="Describe your professional experience"
             ></textarea>
           </div>
 
           <!-- Date of Birth -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Date of Birth</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Date of Birth</label
+            >
             <input
               type="date"
               formControlName="dob"
@@ -223,7 +291,9 @@
 
           <!-- Gender -->
           <div class="space-y-2">
-            <label class="text-xs md:text-sm font-medium text-light-200">Gender</label>
+            <label class="text-xs md:text-sm font-medium text-light-200"
+              >Gender</label
+            >
             <select
               formControlName="gender"
               class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm md:text-base"
@@ -239,7 +309,9 @@
       </div>
 
       <!-- Form Actions -->
-      <div class="flex flex-col md:flex-row justify-end gap-3 md:gap-4 pt-4 md:pt-6">
+      <div
+        class="flex flex-col md:flex-row justify-end gap-3 md:gap-4 pt-4 md:pt-6"
+      >
         <button
           type="button"
           class="w-full md:w-auto px-4 py-2 md:px-6 md:py-2.5 rounded-lg bg-light-100/20 text-light-100 hover:bg-light-200/20 transition-colors text-sm md:text-base"
@@ -252,11 +324,9 @@
           class="w-full md:w-auto px-4 py-2 md:px-6 md:py-2.5 rounded-lg bg-primary text-light-100 hover:bg-primary/90 transition-colors text-sm md:text-base"
           [disabled]="isLoading"
         >
-          {{ isLoading ? 'Saving...' : 'Save Profile' }}
+          {{ isLoading ? "Saving..." : "Save Profile" }}
         </button>
       </div>
-
-      
     </form>
   </div>
 </div>
