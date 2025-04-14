@@ -43,7 +43,7 @@ export class LoginComponent {
       };
       this.authService.login(formData).subscribe({
         next: (response: any) => {
-          this.authService.setUser(response.user, formData.rememberMe ?? false);
+          this.authService.setUser(response.user);
 
           const role = response.user.Role;
 
