@@ -43,6 +43,7 @@ export class LoginComponent {
       };
       this.authService.login(formData).subscribe({
         next: (response: any) => {
+          console.log(this.loginForm.value)
           this.authService.setUser(response.user);
 
           const role = response.user.Role;

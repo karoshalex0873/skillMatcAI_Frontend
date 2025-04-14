@@ -12,11 +12,11 @@ export class AuthService {
 
 
   // Set user info after login
-  setUser(user: any) {
+  setUser(user: any, remember: boolean = false) {
     this.currentUser = user;
-    sessionStorage.setItem('user', JSON.stringify(user));
+    const storage = remember ? localStorage : sessionStorage;
+    storage.setItem('user', JSON.stringify(user));
   }
-  
 
   // Get user info (for roleGuard or other uses)
   getUser() {
