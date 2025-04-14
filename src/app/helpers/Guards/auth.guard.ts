@@ -11,9 +11,10 @@ export const authGuard: CanActivateFn = (route, state) => {
   return authService.verifyAuth().pipe(
     map(() => true),
     catchError(() => {
-      router.navigate(['/login'])
-      return of(false)
+      setTimeout(() => {
+        router.navigate(['/login']);
+      }, 1500);
+      return of(false);
     })
   )
-
 };

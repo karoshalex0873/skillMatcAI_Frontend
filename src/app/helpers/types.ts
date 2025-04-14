@@ -1,8 +1,3 @@
-export interface Application {
-  position: string;
-  company: string;
-  status: 'Applied' | 'In Review' | 'Offered' | 'Rejected';
-}
 
 // interfaces/job.interface.ts
 export interface Job {
@@ -24,7 +19,7 @@ export interface Application {
   id: string;
   position: string;
   company: string;
-  status: 'Applied' | 'In Review' | 'Offered' | 'Rejected';
+  status: string;
   appliedDate: Date;
   matchPercentage: number;
   jobDescription: string;
@@ -36,6 +31,29 @@ export interface Application {
     questions: { question: string; answer: string }[];
   };
 }
+
+// application.model.ts (create if not already)
+export interface ApplicationResponse {
+  id: number;
+  status: string;
+  appliedAt: string;
+  job: {
+    job_id: number;
+    title: string;
+    company: string;
+    location: string;
+    matchPercentage: number;
+    skills: string[];
+    experienceLevel: string;
+    salaryRange: string;
+    type: string;
+    postedDate: string;
+  };
+}
+
+
+
+
 export interface Applicant {
   id:number;
   name:string;

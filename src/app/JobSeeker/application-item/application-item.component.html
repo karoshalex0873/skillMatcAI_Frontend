@@ -1,105 +1,126 @@
 <!-- Application Section -->
 <div class="p-4 space-y-4 bg-dark-100 rounded-xl">
-  <!-- IF ONE IS SELECTED: Show Expanded -->
-  <ng-container *ngIf="selectedApplicationId; else cardList">
-    <ng-container *ngFor="let application of latestApplications">
-      <ng-container *ngIf="application.id === selectedApplicationId">
-        <div class="bg-light-100/10 rounded-lg p-6 space-y-4">
-          <div class="flex justify-between items-start">
-            <div>
-              <h2 class="text-xl font-semibold text-light-100">
-                {{ application.position }}
-              </h2>
-              <p class="text-sm text-light-200">{{ application.company }}</p>
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="flex justify-center items-center min-h-40">
+    <div class="flex flex-col items-center gap-3 animate-pulse">
+      <span
+      class="text-3xl text-light-100"
+        ><ng-icon
+          name="ionSyncOutline"
+          class="animate-spin w-8 h-8 text-light-100"
+        ></ng-icon
+      ></span>
+      <span class="loader"></span>
+      <span class="text-light-100 text-sm md:text-base">
+        Loading Applications...
+      </span>
+    </div>
+  </div>
+
+  <!-- Content when loaded -->
+  <ng-container *ngIf="!isLoading">
+    <!-- Expanded View -->
+    <ng-container *ngIf="selectedApplicationId; else cardList">
+      <ng-container *ngFor="let application of latestApplications">
+        <ng-container *ngIf="application.id === selectedApplicationId">
+          <div class="bg-light-100/10 rounded-lg p-6 space-y-4">
+            <!-- ... existing expanded view content ... -->
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 class="text-xl font-semibold text-light-100">
+                  {{ application.job.title }}
+                </h2>
+                <p class="text-sm text-light-200">
+                  {{ application.job.company }}
+                </p>
+              </div>
+              <span
+                class="px-3 py-1 rounded-full text-xs font-medium"
+                [ngClass]="getStatusColor(application.status)"
+              >
+                {{ application.status }}
+              </span>
             </div>
-            <span
-              class="px-3 py-1 rounded-full text-xs font-medium"
-              [ngClass]="statusColors[application.status]"
+
+            <div class="text-light-200 text-sm space-y-1">
+              <!-- ... other application details ... -->
+            </div>
+
+            <button
+              class="mt-4 px-4 py-2 bg-light-100 text-dark-100 rounded hover:bg-light-200 transition"
+              (click)="toggleDetails(application.id)"
             >
-              {{ application.status }}
-            </span>
+              Back to Applications
+            </button>
           </div>
-
-          <div class="text-light-200 text-sm space-y-1">
-            <p>
-              <strong>Applied:</strong>
-              {{ application.appliedDate | date : "shortDate" }}
-            </p>
-            <p><strong>Match:</strong> {{ application.matchPercentage }}%</p>
-            <p><strong>Salary:</strong> {{ application.salaryRange }}</p>
-            <p>
-              <strong>Description:</strong> {{ application.jobDescription }}
-            </p>
-
-            <div>
-              <strong>Requirements:</strong>
-              <ul class="list-disc ml-6">
-                <li *ngFor="let req of application.requirements">{{ req }}</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong>Application Questions:</strong>
-              <ul class="list-disc ml-6">
-                <li *ngFor="let q of application.applicationForm.questions">
-                  {{ q.question }}
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <button
-            class="mt-4 px-4 py-2 bg-light-100 text-dark-100 rounded hover:bg-light-200 transition"
-            (click)="toggleDetails(application.id)"
-          >
-            Back to Applications
-          </button>
-        </div>
+        </ng-container>
       </ng-container>
     </ng-container>
-  </ng-container>
 
-  <!-- Default View: Grid of 3 Latest -->
-  <ng-template #cardList>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- Default Card List -->
+    <ng-template #cardList>
       <div
-        *ngFor="let application of latestApplications"
-        (click)="toggleDetails(application.id)"
-        class="bg-light-100/10 rounded-lg p-4 hover:bg-dark-200 transition-colors cursor-pointer"
+        *ngIf="latestApplications.length > 0; else emptyState"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
       >
-        <div class="flex justify-between mb-2">
-          <div>
-            <h3 class="text-light-100 font-medium">
-              {{ application.position }}
-            </h3>
-            <p class="text-light-200 text-sm">{{ application.company }}</p>
+        <div
+          *ngFor="let application of latestApplications"
+          (click)="toggleDetails(application.id)"
+          class="bg-light-100/10 rounded-lg p-4 hover:bg-dark-200 transition-colors cursor-pointer"
+        >
+          <div class="flex justify-between mb-2">
+            <div>
+              <h3 class="text-light-100 font-medium">
+                {{ application.job.title }}
+              </h3>
+              <p class="text-light-200 text-sm">
+                {{ application.job.company }}
+              </p>
+            </div>
+            <div>
+              <p
+                class="text-xs w-16 text-center rounded-xs"
+                [ngClass]="getStatusColor(application.status)"
+              >
+                {{ application.status }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p
-              class="text-xs w-16 text-center rounded-xs"
-              [ngClass]="statusColors[application.status]"
-            >
-              {{ application.status }}
-            </p>
-          </div>
-        </div>
 
-        <div class="flex justify-between text-sm text-light-200">
-          <div class="flex items-center">
-            <ng-icon name="ionCalendarOutline" class="w-4 h-4 mr-1"></ng-icon>
-            {{ application.appliedDate | date : "shortDate" }}
-          </div>
-          <div class="flex items-center">
-            <span class="mr-2">Match:</span>
-            <div class="w-20 bg-primary rounded-full h-2">
-              <div
-                class="h-2 rounded-full bg-green-400"
-                [style.width]="application.matchPercentage + '%'"
-              ></div>
+          <div class="flex justify-between text-sm text-light-200">
+            <div class="flex flex-row justify-center items-center gap-2">
+              <span>Application Date</span>
+              <ng-icon name="ionCalendar" class="w-4 h-4 mr-1"></ng-icon>
+            </div>
+            <div class="flex flex-col items-center">
+              {{ application.appliedAt | date : "shortDate" }}
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </ng-template>
+
+      <!-- Empty State -->
+      <ng-template #emptyState>
+        <div class="text-center py-8 text-light-200 space-y-4">
+          <ng-icon
+            name="ionSadOutline"
+            class="w-12 h-12 mx-auto text-light-200/60"
+          ></ng-icon>
+          <div class="space-y-2">
+            <p class="text-lg font-medium">No Applications Found</p>
+            <p class="text-sm text-light-200/80 max-w-md mx-auto">
+              You haven't submitted any job applications yet. Start applying to
+              opportunities and track your progress here!
+            </p>
+          </div>
+          <button
+            class="mt-4 px-6 py-2 bg-primary/80 text-light-100 rounded-md hover:bg-primary transition-colors cursor-pointer"
+            routerLink="/jobs/aut"
+          >
+            Browse Jobs
+          </button>
+        </div>
+      </ng-template>
+    </ng-template>
+  </ng-container>
 </div>

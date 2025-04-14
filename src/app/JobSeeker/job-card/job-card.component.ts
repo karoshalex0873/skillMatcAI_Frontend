@@ -4,10 +4,12 @@ import { IconsModule } from '../../helpers/icons.module';
 import { Job } from '../../helpers/types';
 import { JobService } from '../../service/job.service';
 import { Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../helpers/environment';
 
 @Component({
   selector: 'app-job-card',
-  imports: [CommonModule,IconsModule,RouterModule],
+  imports: [CommonModule, IconsModule, RouterModule],
   templateUrl: './job-card.component.html',
   styleUrl: './job-card.component.css'
 })
@@ -16,30 +18,61 @@ export class JobCardComponent {
   jobs: Job[] = []
   isLoading = true; // Add loading state
   errorMessage: string = '';
-  
+  successMessage: string = '';
+
   constructor(
-    private jobService:JobService,
-    private router:Router
-  ){}
+    private http: HttpClient,
+    private jobService: JobService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.jobService.getJob().subscribe({
       next: (data) => {
-        this.jobs = data;
-        this.isLoading = false;
+        setTimeout(() => {
+          this.jobs = data;
+          this.isLoading = false;
+        }, 2000);
       },
       error: (err) => {
-        this.errorMessage=`Something went wrong ⚠`
-        console.error('Failed to fetch jobs:', err);
-        this.isLoading = false;
+        setTimeout(() => {
+          this.errorMessage = `Something went wrong ⚠`
+          this.isLoading = false;
+        }, 2000);
       }
     });
   }
 
   // applpy
   applyForJob(job_id: number) {
-    this.router.navigate(['/application', job_id]);
+    // Clear previous messages
+    this.clearMessages();
+    
+    this.http.post(
+      `${environment.apiUrl}/jobs/apply/${job_id}`,
+      {},
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.successMessage = 'Application successful! Redirecting...';
+        setTimeout(() => {
+          this.router.navigate(['/jobs/applications']);
+          this.clearMessages();
+        }, 2500); // Give users 2.5 seconds to see the message
+      },
+      error: (err) => {
+        const msg = err.error?.message || err.message || 'Something went wrong';
+        this.errorMessage = msg;
+        setTimeout(() => this.clearMessages(), 4000);
+      }
+    });
   }
+  
+  private clearMessages() {
+    this.successMessage = '';
+    this.errorMessage = '';
+  }
+
 
   getMatchColor(percentage: number): string {
     if (percentage >= 85) return 'bg-green-400/20 text-green-400';

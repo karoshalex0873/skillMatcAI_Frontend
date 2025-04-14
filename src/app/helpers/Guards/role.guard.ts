@@ -7,26 +7,28 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
   return () => {
     const authGuard = inject(AuthService);
     const router = inject(Router);
-    const user=authGuard.getUser()
+    const user = authGuard.getUser()
 
     // check from memory
-    if(user && allowedRoles.includes(user.Role.toString())){
+    if (user && allowedRoles.includes(user.Role.toString())) {
       return true
     }
 
     // 
     return authGuard.verifyAuth().pipe(
       map(res => {
-        if(res && allowedRoles.includes(res.Rol.toString())){
+        if (res && allowedRoles.includes(res.Rol.toString())) {
           authGuard.setUser(res)
           return true
-        }else{
+        } else {
           router.navigate(['/home']);
           return false;
         }
       }),
       catchError(() => {
-        router.navigate(['/login']);
+        setTimeout(() => {
+          router.navigate(['/login']);
+        }, 1500);
         return of(false);
       })
     );
