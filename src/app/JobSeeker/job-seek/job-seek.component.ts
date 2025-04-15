@@ -47,9 +47,6 @@ export class JobSeekComponent {
         const firstName = this.name.split(' ')[0];
         this.userName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
-        console.log("IMAGE URL FROM BACKEND: ", data.user.avatar);
-
-
         if (data.user.avatar) {
           this.profileImage = data.user.avatar;
           this.avatarUrl = this.profileImage ?? '';

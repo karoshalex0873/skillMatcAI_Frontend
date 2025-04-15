@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IconsModule } from '../../helpers/icons.module';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../helpers/environment';
 
 interface CareerGoal {
   id: string;
@@ -32,6 +34,7 @@ export class CareerPathComponent {
   isLoading = false;
   learningPath: any;
   errorMessage = '';
+  forcePersist = false;
 
   careerGoals: CareerGoal[] = [
     { id: 'frontend', title: 'Frontend Developer' },
@@ -47,13 +50,39 @@ export class CareerPathComponent {
     { label: '20+ hours', value: 25 }
   ];
 
+  constructor(private http: HttpClient) { }
+
+  ngOnInit() {
+    this.loadSavedPath();
+  }
+
+  private loadSavedPath() {
+    this.isLoading = true;
+    this.http.get<any>(`${environment.apiUrl}/jobs/path`, { withCredentials: true })
+      .subscribe({
+        next: (data) => {
+          if (data.milestones) {
+            this.learningPath = this.transformApiData(data);
+            this.forcePersist = true;
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.isLoading = false;
+          if (error.status !== 404) {
+            this.errorMessage = 'Failed to load saved learning path';
+          }
+        }
+      });
+  }
+
   get canGenerate(): boolean {
     return this.selectedSkills.length > 0 && !!this.selectedGoal;
   }
 
   searchSkills(event: Event) {
     const query = (event.target as HTMLInputElement).value.toLowerCase();
-    this.skillSuggestions = this.allSkills.filter(skill => 
+    this.skillSuggestions = this.allSkills.filter(skill =>
       skill.toLowerCase().includes(query)
     ).slice(0, 5);
   }
@@ -73,41 +102,80 @@ export class CareerPathComponent {
   generateLearningPath() {
     this.isLoading = true;
     this.errorMessage = '';
-    
-    // Simulate API delay
-    setTimeout(() => {
-      this.learningPath = this.generateDummyPath();
-      this.isLoading = false;
-    }, 1500);
+    this.forcePersist = true;
+
+    this.http.post<any>(`${environment.apiUrl}/jobs/path`, {
+      skills: this.selectedSkills,
+      goal: this.selectedGoal,
+      time: this.selectedTime
+    }, { withCredentials: true }).subscribe({
+      next: (data) => {
+        this.learningPath = this.transformApiData(data);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to generate learning path';
+        this.isLoading = false;
+        this.forcePersist = true;
+      }
+    });
   }
 
-  private generateDummyPath() {
-    const weeks = Math.floor(this.selectedTime / 5);
-    const goal = this.careerGoals.find(g => g.id === this.selectedGoal)?.title;
-
-    return {
-      milestones: Array.from({ length: weeks }, (_, i) => ({
-        week: i + 1,
-        title: `Week ${i + 1}: ${goal} Fundamentals`,
-        description: `Focus on core ${goal} concepts and practical applications`,
-        resources: [
-          {
-            title: `Introduction to ${goal}`,
-            type: 'Video Course',
-            link: '#'
-          },
-          {
-            title: `${goal} Best Practices`,
-            type: 'Article',
-            link: '#'
-          },
-          {
-            title: 'Interactive Coding Exercise',
-            type: 'Practice Lab',
-            link: '#'
-          }
-        ]
-      }))
-    };
+  resetLearningPath() {
+    this.isLoading = true;
+    this.http.delete(`${environment.apiUrl}/jobs/path`, { withCredentials: true })
+      .subscribe({
+        next: () => {
+          this.learningPath = undefined;
+          this.forcePersist = false;
+          this.selectedSkills = [];
+          this.selectedGoal = 'frontend';
+          this.selectedTime = 10;
+          this.errorMessage = '';
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.errorMessage = 'Failed to delete learning path';
+          this.isLoading = false;
+        }
+      });
   }
+
+  private transformApiData(apiData: any) {
+      return {
+        milestones: apiData.milestones.map((milestone: any) => ({
+          ...milestone,
+          resources: [
+            ...this.mapResources(milestone.resources.articles, 'Article'),
+            ...this.mapResources(milestone.resources.videos, 'Video'),
+            ...this.mapResources(milestone.resources.projects, 'Project')
+          ]
+        }))
+      };
+  }
+
+  private mapResources(urls: string[], type: string) {
+    return urls.map(url => ({
+      title: this.extractTitleFromUrl(url),
+      type: type,
+      link: url
+    }));
+  }
+
+  private extractTitleFromUrl(url: string): string {
+    try {
+      const parsed = new URL(url);
+      const pathParts = parsed.pathname.split('/');
+      const lastPart = pathParts.pop() || pathParts[pathParts.length - 1];
+      return lastPart
+        .replace(/[-_]/g, ' ')
+        .replace(/%20/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    } catch {
+      return url;
+    }
+  }
+
 }
