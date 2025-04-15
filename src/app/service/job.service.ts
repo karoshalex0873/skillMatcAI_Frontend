@@ -11,15 +11,17 @@ export class JobService {
   private apiUrl = environment.apiUrl
 
   constructor(private http: HttpClient) { }
- 
-  // service to creta a job 
+
   createJob(jobData: any) {
-    return this.http.post(`${this.apiUrl}/jobs/JobPost`, jobData);
+    return this.http.post<{data:Job}>(`${this.apiUrl}/jobs/create`, jobData, {
+      withCredentials: true
+    });
   }
 
-  // sercive to get recruieter job
   getRecruiterJobs() {
-    return this.http.get(`${this.apiUrl}/recruiter`);
+    return this.http.get<{data:Job}>(`${this.apiUrl}/jobs/JobPost`, {
+      withCredentials: true
+    });
   }
 
 

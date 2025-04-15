@@ -1,149 +1,241 @@
 <!-- job-posting.component.html -->
-
-<div class="bg-dark-100 w-full h-full overflow-auto">
-  <h1 class="text-light-100 font-semibold font-serif text-lg uppercase">recently added jobs</h1>
-
-  <div class="w-full">
-    <!-- button to post -->
-    <button
-      (click)="openModal()"
-      class="text-primary bg-light-100 px-3 py-1.5 right-10 rounded-md absolute justify-center items-center gap-2 cursor-pointer"
-    >
-      Post
-      <span class="text-lg"><ng-icon name="ionAdd"></ng-icon></span>
-    </button>
-
-    <!-- posting form -->
+<div class="bg-dark-100 min-h-screen p-6 text-light-100 relative">
+  <!-- Notifications -->
+  <div class="absolute top-4 z-50 space-y-2 w-96">
+    <!-- Error Message -->
     <div
-      [ngClass]="{'hidden': !isModalOpen}"
-      class="bg-light-100/20 fixed h-[60vh] overflow-auto cursor-auto backdrop-blur-md z-50 p-6 rounded-2xl max-w-3xl mx-auto
-      hide-scrollbar
-      "
+      *ngIf="errorMessage"
+      class="p-4 bg-red-600/40 border border-light-100 backdrop-blur-md rounded-lg flex justify-between items-center animate-fade-in"
     >
-      <h2 class="text-2xl text-light-100 font-bold mb-6">
-        Create an Opptunity
-      </h2>
+      <span class="text-sm">{{ errorMessage }}</span>
+      <button
+        (click)="errorMessage = ''"
+        class="text-light-100/80 hover:text-light-100 pl-2"
+      >
+        ×
+      </button>
+    </div>
 
-      <form [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="space-y-6">
-        <!-- Job Title -->
-        <div class="space-y-2">
-          <label
-            class="text-light-200 text-lg font-semibold flex items-center gap-2 font-se"
+    <!-- Success Message -->
+    <div
+      *ngIf="successMessage"
+      class="p-4 bg-green-500/40 border border-light-100 backdrop-blur-md rounded-lg flex justify-between items-center animate-fade-in"
+    >
+      <span class="text-sm">{{ successMessage }}</span>
+      <button
+        (click)="successMessage = ''"
+        class="text-light-100/80 hover:text-light-100 pl-2"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-2xl font-bold">Job Postings</h1>
+      <button
+        (click)="openModal()"
+        class="bg-light-100/10 backdrop-blur-md px-4 py-2 rounded-lg text-light-100 transition-colors flex items-center gap-2"
+      >
+        <ng-icon name="ionAddOutline" class="w-5 h-5"></ng-icon>
+        Post New Job
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoadingJobs" class="text-center py-12">
+      <div class="flex justify-center items-center">
+        <span class="loader"></span>
+      </div>
+      <p class="mt-4 text-light-200">Loading job postings...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoadingJobs && jobs.length === 0" class="text-center py-12">
+      <p class="text-light-200">
+        No job postings found. Create your first opportunity!
+      </p>
+    </div>
+
+    <!-- Jobs Grid -->
+    <div
+      *ngIf="!isLoadingJobs && jobs.length > 0"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
+      <!-- Job Card -->
+      <div
+        *ngFor="let job of jobs"
+        class="bg-light-100/20 backdrop-blur-md rounded-lg p-4 transition-colors"
+      >
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <h3 class="text-lg font-semibold">{{ job.title }}</h3>
+            <p class="text-light-200 text-sm">{{ job.company }}</p>
+          </div>
+        </div>
+
+        <div class="h-px bg-light-100/50 rounded-full my-3"></div>
+
+        <!-- Skills -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span
+            *ngFor="let skill of job.skills"
+            class="px-2 py-1 text-sm bg-light-100/70 text-primary rounded-md"
           >
-            <ng-icon name="ionBriefcase"></ng-icon>
-            Job Title
-          </label>
+            {{ skill }}
+          </span>
+        </div>
+
+        <!-- Details -->
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center gap-2">
+            <span>Type :</span>
+            <ng-icon name="ionLocationOutline" class="w-4 h-4"></ng-icon>
+            {{ job.location }}
+          </div>
+          <div class="flex items-center gap-2">
+            <span>salaryRange :</span>
+            <ng-icon name="ionCashOutline" class="w-4 h-4"></ng-icon>
+            {{ job.salaryRange || "Competitive Salary" }}
+          </div>
+          <div class="flex items-center gap-2">
+            <span>Date Posted :</span>
+            <ng-icon name="ionCalendarOutline" class="w-4 h-4"></ng-icon>
+            {{ job.postedDate | date : "mediumDate" }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Form Modal -->
+  <div
+    *ngIf="isModalOpen"
+    class="fixed inset-0 bg-dark-100/10 flex items-center justify-center p-4 z-50"
+  >
+    <div
+      class="bg-light-200/20 backdrop-blur-md hide-scrollbar rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-auto"
+    >
+      <div
+        class="flex bg-dark-100/80 backdrop-blur-md px-5 py-3 rounded-lg justify-between items-center mb-6"
+      >
+        <h2 class="text-xl font-bold">Create Job Post</h2>
+        <button
+          (click)="closeModal()"
+          class="text-light-100/50 hover:text-light-100"
+        >
+          <ng-icon name="ionCloseOutline" class="w-6 h-6"></ng-icon>
+        </button>
+      </div>
+
+      <form
+        [formGroup]="jobForm"
+        (ngSubmit)="onSubmit()"
+        class="space-y-6 bg-dark-100/80 backdrop-blur-md px-5 py-3 rounded-lg"
+      >
+        <!-- Job Title -->
+        <div>
+          <label class="block text-sm font-medium mb-2">Job Title :</label>
           <input
             type="text"
             formControlName="title"
-            class="w-full p-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100/40 focus:border-primary focus:ring-2 focus:ring-primary/20"
-            placeholder="eg Senior UX Designer"
+            class="w-full p-3 bg-dark-100 rounded-lg focus:ring-2 focus:ring-primary placeholder:text-light-100/20 placeholder:italic focus:border-transparent"
+            placeholder="Senior Frontend Developer"
           />
+          <div
+            *ngIf="jobForm.get('title')?.errors?.['required'] && jobForm.get('title')?.touched"
+            class="text-red-400 text-sm mt-1"
+          >
+            Title is required
+          </div>
         </div>
 
         <!-- Company & Location -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label class="text-light-200 flex items-center gap-2">
-              <ng-icon
-                name="ion-business-outline"
-                class="text-primary"
-              ></ng-icon>
-              Company
-            </label>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium mb-2">Company *</label>
             <input
               type="text"
               formControlName="company"
-              class="w-full p-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20"
-              placeholder="Tech Innovators Inc"
+              class="w-full p-3 bg-dark-100 rounded-lg focus:ring-2 focus:ring-primary placeholder:text-light-100/20 placeholder:italic focus:border-transparent"
+              placeholder="Tech Corp Inc"
             />
           </div>
-
-          <div class="space-y-2">
-            <label class="text-light-200 flex items-center gap-2">
-              <ng-icon
-                name="ion-location-outline"
-                class="text-primary"
-              ></ng-icon>
-              Location 
-            </label>
+          <div>
+            <label class="block text-sm font-medium mb-2">Location *</label>
             <input
               type="text"
               formControlName="location"
-              class="w-full p-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20"
+              class="w-full p-3 bg-dark-100 rounded-lg focus:ring-2 focus:ring-primary placeholder:text-light-100/20 placeholder:italic focus:border-transparent"
               placeholder="Remote"
             />
           </div>
         </div>
 
         <!-- Salary & Type -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label class="text-light-200 flex items-center gap-2">
-              <ng-icon name="ion-cash-outline" class="text-primary"></ng-icon>
-              Salary Range 
-            </label>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium mb-2">Salary Range *</label>
             <input
               type="text"
               formControlName="salaryRange"
-              class="w-full p-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20"
-              placeholder="$100k - $130k"
+              class="w-full p-3 bg-dark-100 rounded-lg focus:ring-2 focus:ring-primary placeholder:text-light-100/20 placeholder:italic focus:border-transparent"
+              placeholder="$80k - $120k"
             />
+            <div
+              *ngIf="jobForm.get('salaryRange')?.errors?.['invalidFormat']"
+              class="text-red-400 text-sm mt-1"
+            >
+              Format: $00k - $00k
+            </div>
           </div>
-
-          <div class="space-y-2">
-            <label class="text-light-200 flex items-center gap-2">
-              <ng-icon name="ion-time-outline" class="text-primary"></ng-icon>
-              Job Type 
-            </label>
+          <div>
+            <label class="block text-sm font-medium mb-2">Job Type *</label>
             <select
               formControlName="type"
-              class="w-full p-3 rounded-lg bg-dark-100/80 backdrop-blur-md border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20"
+              class="w-full p-3 bg-dark-100 rounded-lg focus:ring-2 focus:ring-primary placeholder:text-light-100/20 placeholder:italic focus:border-transparent"
             >
-              <option class="bg-primary/10 backdrop-blur-md text-light-100" value="Full-time">Full-time</option>
-              <option class="bg-primary/10 backdrop-blur-md text-light-100" value="Part-time">Part-time</option>
-              <option class="bg-primary/10 backdrop-blur-md text-light-100" value="Contract">Contract</option>
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+              <option value="Contract">Contract</option>
             </select>
           </div>
         </div>
 
         <!-- Experience & Skills -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-2">
-            <label class="text-light-200 flex items-center gap-2">
-              <ng-icon
-                name="ionStatsChart"
-                class="text-primary"
-              ></ng-icon>
-              Experience Level
-            </label>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium mb-2"
+              >Experience Level *</label
+            >
             <select
               formControlName="experienceLevel"
-              class="w-full p-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20"
+              class="w-full p-3 bg-dark-100 rounded-lg focus:ring-2 focus:ring-primary placeholder:text-light-100/20 placeholder:italic focus:border-transparent"
             >
               <option value="Junior">Junior</option>
               <option value="Mid-level">Mid-level</option>
               <option value="Senior">Senior</option>
             </select>
           </div>
-
-          <div class="space-y-2">
-            <label class="text-light-200 flex items-center gap-2">
-              <ng-icon name="ionHammer" class="text-primary"></ng-icon>
-              Required Skills *
-            </label>
+          <div>
+            <label class="block text-sm font-medium mb-2"
+              >Required Skills *</label
+            >
             <div class="flex gap-2">
               <input
                 type="text"
                 #skillInput
-                class="w-full p-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                class="w-full p-3 bg-dark-100 rounded-lg focus:ring-2 focus:ring-primary placeholder:text-light-100/20 placeholder:italic focus:border-transparent"
                 placeholder="Add skill"
                 (keyup.enter)="addSkill(skillInput)"
               />
               <button
                 type="button"
-                class="px-4 bg-light-100/10 backdrop-blur-md py-1 cursor-pointer text-primary rounded-lg hover:bg-primary/20 transition-colors"
                 (click)="addSkill(skillInput)"
+                class="px-6 bg-light-200 text-base text-dark-100 rounded-lg "
               >
                 Add
               </button>
@@ -151,13 +243,13 @@
             <div class="flex flex-wrap gap-2 mt-2">
               <div
                 *ngFor="let skill of skills.controls; let i = index"
-                class="px-3 py-1.5 bg-primary/10 text-primary rounded-full flex items-center gap-2 text-sm"
+                class="px-3 py-1 bg-light-100 text-primary  rounded-md text-sm flex items-center gap-2"
               >
                 {{ skill.value }}
                 <button
                   type="button"
-                  class="text-primary/50 hover:text-primary text-xs"
                   (click)="removeSkill(i)"
+                  class="text-primary/50 hover:text-primary text-md"
                 >
                   ×
                 </button>
@@ -167,119 +259,33 @@
         </div>
 
         <!-- Post Date -->
-        <div class="space-y-2">
-          <label class="text-light-200 flex items-center gap-2">
-            <ng-icon name="ion-calendar-outline" class="text-primary"></ng-icon>
-            Post Date *
-          </label>
+        <div>
+          <label class="block text-sm font-medium mb-2">Post Date *</label>
           <input
             type="date"
             formControlName="postedDate"
-            class="w-full p-3 rounded-lg bg-dark-100 border-2 border-primary/10 text-light-100 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="w-full p-3 bg-dark-100 rounded-lg focus:ring-2 focus:ring-primary placeholder:text-light-100/20 placeholder:italic focus:border-transparent"
           />
         </div>
 
         <!-- Submit Button -->
-        <div class="flex justify-end gap-2">
-          <button
-            type="submit"
-            class="px-6 py-2.5 bg-primary text-light-100 rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Post Job
-          </button>
-          <button
-          (click)="closeModal()"
-          class="px-6 py-2.5 bg-primary text-light-100 rounded-lg hover:bg-primary/90 transition-colors"
-          >
-          close
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-  <!-- posted -->
-  <div class="max-h-[75vh] overflow-auto hide-scrollbar px-4 scrollbar-hide">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div
-        *ngFor="let job of jobs"
-        class="bg-light-100/15 rounded-lg p-4 hover:bg-dark-200 transition-colors"
-      >
-        <!-- Top section -->
-        <div class="flex items-start justify-between mb-2">
-          <div class="flex flex-col space-y-1">
-            <h3 class="text-light-100 text-base font-semibold">
-              {{ job.title }}
-            </h3>
-            <p class="text-light-200 text-sm">{{ job.company }}</p>
-          </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="h-px bg-light-100 rounded w-full my-3"></div>
-
-        <!-- Skills -->
-        <div class="flex flex-wrap gap-2 items-center mb-3">
+        <button
+          type="submit"
+          [disabled]="isSubmitting"
+          class="w-full py-3 text-dark-100 bg-light-100 hover:bg-light-100/90 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span *ngIf="!isSubmitting">Post Job</span>
           <span
-            *ngFor="let skill of job.skills"
-            class="px-2 py-1 text-sm bg-primary/20 text-light-200 rounded-md"
+            *ngIf="isSubmitting"
+            class="flex items-center justify-center gap-2"
           >
-            {{ skill }}
+            <span
+              class="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full"
+            ></span>
+            Posting...
           </span>
-        </div>
-
-        <!-- Description -->
-        <div class="bg-dark-100 py-3 px-3 rounded-md">
-          <h4 class="text-light-100 font-semibold text-sm mb-3">Description</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <!-- Location -->
-            <div class="flex flex-col text-light-200">
-              <span class="font-semibold text-light-100 mb-0.5">Location:</span>
-              <div class="flex items-center">
-                <ng-icon
-                  name="ionLocationOutline"
-                  class="w-4 h-4 mr-1"
-                ></ng-icon>
-                {{ job.location }}
-              </div>
-            </div>
-
-            <!-- Work Type -->
-            <div class="flex flex-col text-light-200">
-              <span class="font-semibold text-light-100 mb-0.5"
-                >Work Type:</span
-              >
-              <div class="flex items-center">
-                <ng-icon
-                  name="ionBriefcaseOutline"
-                  class="w-4 h-4 mr-1"
-                ></ng-icon>
-                {{ job.type }}
-              </div>
-            </div>
-
-            <!-- Salary -->
-            <div class="flex flex-col text-light-200">
-              <span class="font-semibold text-light-100 mb-0.5">Salary:</span>
-              <div class="flex items-center">
-                <ng-icon name="ionCashOutline" class="w-4 h-4 mr-1"></ng-icon>
-                {{ job.salaryRange || "Competitive" }}
-              </div>
-            </div>
-
-            <!-- Posted Date -->
-            <div class="flex flex-col text-light-200">
-              <span class="font-semibold text-light-100 mb-0.5">Posted:</span>
-              <div class="flex items-center">
-                <ng-icon
-                  name="ionCalendarOutline"
-                  class="w-4 h-4 mr-1"
-                ></ng-icon>
-                {{ job.postedDate | date : "shortDate" }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </button>
+      </form>
     </div>
   </div>
 </div>
