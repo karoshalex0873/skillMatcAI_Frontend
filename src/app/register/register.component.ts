@@ -20,7 +20,7 @@ export class RegisterComponent {
   roles = [
     { value: 1, label: 'Job Seeker' },
     { value: 2, label: 'Employer' },
-    { value: 3, label: 'Admin' }
+    // { value: 3, label: 'Admin' }
   ];
 
   registerForm = new FormGroup({

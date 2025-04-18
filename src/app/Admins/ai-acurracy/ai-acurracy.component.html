@@ -1,176 +1,111 @@
-<!-- ai-acurracy.component.html -->
-<div
-  class="flex flex-col h-full bg-dark-100 p-6 rounded-xl border border-light-100/20"
->
+<div class="flex flex-col h-[75vh] hide-scrollbar overflow-auto bg-dark-100 p-6 rounded-xl border border-light-100/20">
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h2 class="text-2xl font-bold text-light-100">AI Model Accuracy</h2>
-      <p class="text-light-200 mt-1">Current version: v2.1.5</p>
+      <h2 class="text-2xl font-bold text-light-100">AI Model Performance</h2>
+      <p class="text-light-200 mt-1">Current version: {{ metrics.version }}</p>
     </div>
     <div class="flex items-center gap-2 text-light-200">
       <ng-icon name="ionStatsChart" class="text-primary"></ng-icon>
-      <span class="text-sm">Last trained: 2 hours ago</span>
+      <span class="text-sm">Last updated: {{ metrics.lastUpdated | date:'medium' }}</span>
     </div>
   </div>
 
-  <!-- Accuracy Metrics -->
+  <!-- Performance Metrics -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-    <div
-      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
-    >
+    <!-- Accuracy -->
+    <div class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-light-200 text-sm">Current Accuracy</p>
-          <p class="text-2xl font-bold text-light-100 mt-1">92.4%</p>
+          <p class="text-light-200 text-sm">Accuracy</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">{{ metrics.accuracy | percent:'1.1-1' }}</p>
         </div>
         <div class="p-2 bg-green-500/20 rounded-lg">
-          <ng-icon
-            name="ionCheckmarkCircle"
-            class="text-2xl text-green-400"
-          ></ng-icon>
+          <ng-icon name="ionCheckmarkCircle" class="text-2xl text-green-400"></ng-icon>
         </div>
       </div>
       <div class="flex items-center gap-2 mt-3">
         <span class="text-green-400 text-sm flex items-center">
-          <ng-icon name="ionArrowUp"></ng-icon> 4.2%
+          <ng-icon name="ionArrowUp"></ng-icon>
+          {{ accuracyImprovement | percent:'1.1-1' }}
         </span>
         <span class="text-light-200 text-sm">since last update</span>
       </div>
     </div>
 
-    <div
-      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
-    >
+    <!-- Precision -->
+    <div class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-light-200 text-sm">Precision</p>
-          <p class="text-2xl font-bold text-light-100 mt-1">89.7%</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">{{ metrics.precision | percent:'1.1-1' }}</p>
         </div>
         <div class="p-2 bg-blue-500/20 rounded-lg">
           <ng-icon name="ionGitMerge" class="text-2xl text-blue-400"></ng-icon>
         </div>
       </div>
       <div class="flex items-center gap-2 mt-3">
-        <span class="text-red-400 text-sm flex items-center">
-          <ng-icon name="ionArrowDown"></ng-icon> 1.1%
-        </span>
-        <span class="text-light-200 text-sm">target: 92%</span>
+        <span class="text-light-200 text-sm">Target: 90%</span>
       </div>
     </div>
 
-    <div
-      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
-    >
+    <!-- Recall -->
+    <div class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-light-200 text-sm">Recall</p>
-          <p class="text-2xl font-bold text-light-100 mt-1">91.2%</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">{{ metrics.recall | percent:'1.1-1' }}</p>
         </div>
         <div class="p-2 bg-purple-500/20 rounded-lg">
-          <ng-icon
-            name="ionRefreshCircle"
-            class="text-2xl text-purple-400"
-          ></ng-icon>
+          <ng-icon name="ionRefreshCircle" class="text-2xl text-purple-400"></ng-icon>
         </div>
       </div>
       <div class="flex items-center gap-2 mt-3">
-        <span class="text-green-400 text-sm flex items-center">
-          <ng-icon name="ionArrowUp"></ng-icon> 2.8%
-        </span>
-        <span class="text-light-200 text-sm">improvement</span>
+        <span class="text-light-200 text-sm">Industry avg: 88%</span>
       </div>
     </div>
 
-    <div
-      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
-    >
+    <!-- F1 Score -->
+    <div class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-light-200 text-sm">F1 Score</p>
-          <p class="text-2xl font-bold text-light-100 mt-1">90.4%</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">{{ metrics.f1Score | percent:'1.1-1' }}</p>
         </div>
         <div class="p-2 bg-yellow-500/20 rounded-lg">
-          <ng-icon
-            name="ionSpeedometer"
-            class="text-2xl text-yellow-400"
-          ></ng-icon>
+          <ng-icon name="ionSpeedometer" class="text-2xl text-yellow-400"></ng-icon>
         </div>
       </div>
       <div class="flex items-center gap-2 mt-3">
-        <span class="text-green-400 text-sm flex items-center">
-          <ng-icon name="ionArrowUp"></ng-icon> 3.6%
-        </span>
-        <span class="text-light-200 text-sm">target reached</span>
+        <span class="text-light-200 text-sm">Composite metric</span>
       </div>
     </div>
   </div>
 
-  <!-- Accuracy Improvement Controls -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Training Parameters -->
-    <div
-      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
-    >
-      <h3 class="text-lg font-semibold text-light-100 mb-4">
-        Training Parameters
-      </h3>
-      <div class="space-y-4">
-        <div>
-          <label class="block text-light-200 mb-2">Learning Rate</label>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            class="w-full bg-dark-100 rounded-lg accent-primary"
-          />
-        </div>
-        <div>
-          <label class="block text-light-200 mb-2">Batch Size</label>
-          <select
-            class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100"
-          >
-            <option>32</option>
-            <option>64</option>
-            <option>128</option>
-          </select>
-        </div>
-        <button
-          class="w-full bg-primary/80 hover:bg-primary text-light-100 px-4 py-3 rounded-lg transition-colors"
-        >
-          Start Training
-        </button>
-      </div>
-    </div>
-
-    <!-- Accuracy Trends -->
-    <div
-      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
-    >
-      <h3 class="text-lg font-semibold text-light-100 mb-4">Accuracy Trends</h3>
+  <!-- Performance Trends -->
+  <div class="grid grid-cols-1 gap-6">
+    <div class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20">
+      <h3 class="text-lg font-semibold text-light-100 mb-4">Performance Trends</h3>
       <div class="h-64">
-        <canvas #accuracyChart></canvas>
+        <canvas #performanceChart></canvas>
       </div>
     </div>
   </div>
 
   <!-- Confusion Matrix -->
-  <div
-    class="mt-6 bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
-  >
+  <div class="mt-6 bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20">
     <h3 class="text-lg font-semibold text-light-100 mb-4">Confusion Matrix</h3>
-    <div class="grid grid-cols-4 gap-px bg-light-100/20 w-fit">
-      <div
-        *ngFor="let cell of confusionMatrix"
-        class="bg-dark-100 p-3 text-center text-light-100"
-      >
+    <div class="grid grid-cols-2 gap-px bg-light-100/20 w-fit">
+      <div *ngFor="let cell of confusionMatrixDisplay" 
+           class="bg-dark-100 p-3 text-center text-light-100 font-mono">
         {{ cell }}
       </div>
     </div>
-    <div class="flex gap-4 mt-4 text-light-200 text-sm">
-      <div>Actual →</div>
-      <div>Predicted ↓</div>
+    <div class="mt-4 grid grid-cols-2 gap-4 text-light-200 text-sm">
+      <div>Actual Positive: {{ confusionMatrixDisplay[0] }}</div>
+      <div>Actual Negative: {{ confusionMatrixDisplay[3] }}</div>
+      <div>False Positive: {{ confusionMatrixDisplay[1] }}</div>
+      <div>False Negative: {{ confusionMatrixDisplay[2] }}</div>
     </div>
   </div>
 </div>

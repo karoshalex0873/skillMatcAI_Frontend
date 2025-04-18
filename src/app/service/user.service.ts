@@ -15,6 +15,11 @@ export class UserService {
     return this.http
       .get<any>(`${this.apiUrl}/auth/verify`, {
         withCredentials: true
-     })
+      })
   }
+
+  createUser(userData: any) {
+    return this.http.post(`${this.apiUrl}/users`, userData,{withCredentials:true});
+  }
+  
 }

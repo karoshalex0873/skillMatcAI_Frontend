@@ -34,7 +34,7 @@ export class JobPostingComponent {
       salaryRange: ['', [Validators.required, this.validateSalaryRange]],
       type: ['', Validators.required],
       experienceLevel: ['', Validators.required],
-      postedDate: [new Date().toISOString().split('T')[0], Validators.required],
+      postedDate: [new Date().toISOString().split('T')[0]],
       skills: this.fb.array([], Validators.required)
     });
   }

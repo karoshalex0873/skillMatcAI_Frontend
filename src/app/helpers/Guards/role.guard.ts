@@ -28,7 +28,7 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
       catchError(() => {
         setTimeout(() => {
           router.navigate(['/login']);
-        }, 1500);
+        }, 0);
         return of(false);
       })
     );

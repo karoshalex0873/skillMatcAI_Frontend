@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { IconsModule } from '../../helpers/icons.module';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { AnalyticsService } from '../../service/analytics.service';
 
 @Component({
   selector: 'app-hire-analytics',
@@ -10,40 +11,87 @@ import { Chart, ChartConfiguration, registerables } from 'chart.js';
   styleUrl: './hire-analytics.component.css'
 })
 export class HireAnalyticsComponent implements AfterViewInit {
-  @ViewChild('hiringTrendsChart', { static: false }) 
+
+
+  @ViewChild('hiringTrendsChart', { static: false })
   hiringTrendsChartRef!: ElementRef<HTMLCanvasElement>;
 
-  @ViewChild('sourcesChart', { static: false }) 
+  @ViewChild('sourcesChart', { static: false })
   sourcesChartRef!: ElementRef<HTMLCanvasElement>;
 
-  recentApplications = [
-    { name: 'John Doe', position: 'Senior Developer', status: 'In Process' },
-    { name: 'Jane Smith', position: 'UX Designer', status: 'Hired' },
-    { name: 'Mike Johnson', position: 'Product Manager', status: 'Rejected' }
-  ];
+  metrics = {
+    totalHires: 0,
+    openPositions: 0,
+    avgTimeToHire: 0,
+    totalApplications: 0
+  };
 
-  upcomingInterviews = [
-    { candidate: 'Sarah Wilson', position: 'Frontend Engineer', date: '2024-03-20', time: '2:30 PM' },
-    { candidate: 'Alex Brown', position: 'DevOps Engineer', date: '2024-03-21', time: '10:00 AM' }
-  ];
 
-  constructor() {
+
+  recentApplications: any[] = [];
+  upcomingInterviews: any[] = [];
+  loading = true;
+  error = '';
+
+
+  constructor(
+    private analyticsService: AnalyticsService,
+    private cd: ChangeDetectorRef
+  ) {
     Chart.register(...registerables);
   }
 
   ngAfterViewInit() {
-    this.createHiringTrendsChart();
-    this.createSourcesChart();
+    this.loadData();
+  }
+  loadData() {
+    this.analyticsService.getRecruiterAnalytics().subscribe({
+      next: (data: any) => {
+        this.metrics = data.metrics;
+        this.recentApplications = data.recentApplications;
+        this.upcomingInterviews = data.upcomingInterviews;
+        setTimeout(() => {
+          this.cd.detectChanges()
+          this.createCharts(data.hiringTrends);
+        });
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load analytics data';
+        this.loading = false;
+      }
+    });
   }
 
-  createHiringTrendsChart() {
+
+  private hiringTrendsChart?: Chart;
+  private sourcesChart?: Chart;
+
+  createCharts(hiringTrends: any[]) {
+
+
+    // Destroy existing charts
+    this.hiringTrendsChart?.destroy();
+    this.sourcesChart?.destroy();
+
+
+    if (!this.hiringTrendsChartRef?.nativeElement ||
+      !this.sourcesChartRef?.nativeElement) {
+      return;
+    }
+
+
+
+
+
+
     new Chart(this.hiringTrendsChartRef.nativeElement, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: hiringTrends.map(t => t.month),
         datasets: [{
           label: 'Hires',
-          data: [12, 19, 15, 25, 22, 30],
+          data: hiringTrends.map(t => t.count),
           borderColor: '#6366f1',
           tension: 0.4,
           fill: true,
@@ -59,10 +107,8 @@ export class HireAnalyticsComponent implements AfterViewInit {
           y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff' } }
         }
       }
-    } as ChartConfiguration);
-  }
+    })
 
-  createSourcesChart() {
     new Chart(this.sourcesChartRef.nativeElement, {
       type: 'doughnut',
       data: {
@@ -78,6 +124,15 @@ export class HireAnalyticsComponent implements AfterViewInit {
         maintainAspectRatio: false,
         plugins: { legend: { position: 'right', labels: { color: '#fff' } } }
       }
-    } as ChartConfiguration);
+    });
   }
 }
+
+
+
+
+
+
+
+
+

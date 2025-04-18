@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen h-full bg-primary flex flex-col md:flex-row pt-14 md:py-24"
+  class="min-h-screen h-screen hide-scrollbar bg-primary flex flex-col md:flex-row pt-14 md:py-24"
 >
   <!-- Mobile Menu Button -->
   <button
@@ -14,7 +14,7 @@
 
   <!-- Sidebar -->
   <aside
-    class="w-full md:w-64 bg-dark-100/70 z-50 backdrop-blur-xl p-6 fixed md:relative h-full mx-0 md:mx-4 rounded-none md:rounded-xl transition-transform duration-300"
+    class="w-full h-[85vh] md:w-64 bg-dark-100/70 z-50 backdrop-blur-xl p-6 fixed md:relative  mx-0 md:mx-4 rounded-none md:rounded-xl transition-transform duration-300"
     [class]="
       isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
     "
@@ -22,15 +22,31 @@
     <div
       class="mb-8 my-2 flex flex-col justify-center items-start text-start space-y-3"
     >
-      <p class="text-light-200 text-sm mt-1">Admin Page</p>
-      <div class=" flex justify-center items-center gap-3">
+      <p class="text-light-200 text-sm mt-1">Job Seeker Dashboard</p>
+
+      <div class="flex justify-between w-full items-center gap-3">
         <h2 class="text-light-100 text-xl font-semibold">
-          👋 <strong>Admin</strong>
+          👋 <strong>{{ userName }}</strong>
         </h2>
-        <img 
-        [src]="avatarUrl" 
-        class="w-14 h-14 rounded-full object-cover"
-        alt="User Image" />
+        <!-- Avatar Section -->
+        <div
+          class=" w-14 h-14 rounded-full overflow-hidden flex items-center justify-center font-bold text-white text-lg"
+          [ngStyle]="{
+            'background-color': profileImage ? 'transparent' : avatarBg
+          }"
+        >
+          <ng-container *ngIf="profileImage; else showInitial">
+            <img
+              [src]="profileImage"
+              alt="User Avatar"
+              class="w-full h-full object-cover"
+            />
+          </ng-container>
+
+          <ng-template #showInitial>
+            {{ initial }}
+          </ng-template>
+        </div>
       </div>
     </div>
     <nav class="space-y-2 sm:space-y-6">
@@ -51,10 +67,7 @@
   <main class="flex-1 mt-20 md:mt-0 md:ml-0 mr-0 md:mr-8 p-8 md:p-0">
     <div class="flex justify-between">
       <div class="flex gap-10 justify-between items-center flex-row">
-        <p class="text-light-200/80 font-medium text-base italic px-3">
-          Manage users, monitor system performance, fine-tune AI accuracy, and
-          optimize platform security from one centralized hub.
-        </p>
+        <p class="text-lg text-light-200">Welcome back, {{ name }}!</p>
       </div>
       <!-- absoulote logout btn -->
       <div>

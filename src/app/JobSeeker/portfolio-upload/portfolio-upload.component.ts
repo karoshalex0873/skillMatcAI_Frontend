@@ -1,64 +1,52 @@
 // portfolio-upload.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IconsModule } from '../../helpers/icons.module';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { timer } from 'rxjs';
+import { environment } from '../../helpers/environment';
 
 @Component({
   selector: 'app-portfolio-upload',
   imports: [IconsModule, CommonModule],
   templateUrl: './portfolio-upload.component.html',
-  styleUrls: ['./portfolio-upload.component.css']
+  styleUrl: './portfolio-upload.component.css'
 })
-export class PortfolioUploadComponent {
-  selectedCard: { type: 'interview' | 'job', data: any } | null = null;
+export class PortfolioUploadComponent implements OnInit {
 
-  interviewAlerts = [
-    {
-      position: 'Frontend Developer',
-      company: 'TechNova',
-      date: new Date('2025-04-10T10:00:00'),
-      location: 'Nairobi HQ',
-      meetingLink: 'https://zoom.us/j/1234567890'
-    },
-    {
-      position: 'UI/UX Designer',
-      company: 'PixelCraft',
-      date: new Date('2025-04-12T14:30:00'),
-      location: 'Remote'
-    },
-  ];
+  selectedCard: { type: 'interview', data: any } | null = null;
+  interviewAlerts: any[] = [];
 
-  jobMatches = [
-    {
-      title: 'Full Stack Developer',
-      company: 'CodeBase Inc.',
-      description: 'React + Node role with AI exposure.',
-      match: 92,
-      postedDate: new Date('2024-03-28T09:00:00'),
-      deadline: new Date('2024-04-15T23:59:00'),
-      applyLink: 'https://example.com/apply'
-    },
-    {
-      title: 'IoT Systems Engineer',
-      company: 'SmartNet',
-      description: 'IoT development for smart health solutions.',
-      match: 88,
-      postedDate: new Date('2024-03-30T14:00:00'),
-      deadline: new Date('2024-04-20T23:59:00'),
-      applyLink: 'https://example.com/iot-apply'
-    },
-  ];
+  constructor(private http: HttpClient) {}
 
-  get sortedJobMatches() {
-    return [...this.jobMatches].sort((a, b) => {
-      // Sort by match score descending
-      if (b.match !== a.match) return b.match - a.match;
-      // Then sort by posted date descending
-      return b.postedDate.getTime() - a.postedDate.getTime();
-    });
+
+
+  ngOnInit(): void {
+    this.fetchInterviews()
+    timer(0,3000).subscribe(()=>this.fetchInterviews())
   }
 
-  showCardDetails(type: 'interview' | 'job', data: any) {
+  private fetchInterviews(){
+    this.http.get<any>(`${environment.apiUrl}/jobs/interview/myInterviews`,{
+      withCredentials:true
+    }).subscribe({
+      next:(response)=>{
+        this.interviewAlerts=response.interviews.map((interview:any)=>({
+          interview_id: interview.interview_id,
+          position: interview.job.title,
+          date: new Date(interview.scheduledAt),
+          mode: interview.mode,
+          notes: interview.notes,
+          status: interview.status,
+          meetingLink: interview.meetingLink || null
+        }))
+      }
+    })
+
+  }
+
+
+  showCardDetails(type: 'interview', data: any) {
     this.selectedCard = { type, data };
   }
 

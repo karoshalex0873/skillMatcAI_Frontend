@@ -1,14 +1,8 @@
 <!-- querry-database.component.html -->
-<div
-  class="flex flex-col w-full h-[65vh] md:w-md bg-dark-100 rounded-xl overflow-hidden shadow-xl border border-light-100/40"
->
+<div class="flex flex-col w-full h-[70vh] bg-dark-100 rounded-xl overflow-hidden shadow-xl border border-light-100/40">
   <!-- Header -->
-  <div
-    class="p-3 md:p-4 bg-light-100/30 backdrop-blur-md border-b border-light-100 flex items-center gap-2 md:gap-3"
-  >
-    <div
-      class="rounded-full text-light-100 bg-dark-100 w-7 h-7 md:w-8 md:h-8 flex justify-center items-center"
-    >
+  <div class="p-3 md:p-4 bg-light-100/30 backdrop-blur-md border-b border-light-100 flex items-center gap-2 md:gap-3">
+    <div class="rounded-full text-light-100 bg-dark-100 w-7 h-7 md:w-8 md:h-8 flex justify-center items-center">
       <ng-icon name="ionSparkles"></ng-icon>
     </div>
     <div>
@@ -18,98 +12,87 @@
   </div>
 
   <!-- Chat Container -->
-  <div
-    #chatContainer
-    class="flex-1 overflow-auto p-3 md:p-4 h-[400px] md:max-h-[500px] hide-scrollbar space-y-3 md:space-y-4"
-  >
+  <div #chatContainer class="flex-1 overflow-auto p-3 md:p-4 h-[400px] md:max-h-[500px] hide-scrollbar space-y-3 md:space-y-4">
     <!-- AI Introduction -->
     <div class="flex gap-3">
-      <div
-        class="rounded-full text-dark-100 bg-light-100 w-8 h-8 flex justify-center items-center text-center"
-      >
+      <div class="rounded-full text-dark-100 bg-light-100 w-8 h-8 flex justify-center items-center">
         <ng-icon name="ionSparkles"></ng-icon>
       </div>
       <div class="flex-1">
-        <div
-          class="bg-light-100/20 backdrop-blur-md max-w-[250px] rounded-lg p-4 border border-light-200/20"
-        >
-          <p class="text-light-100 mb-2">
-            Hi! I'm your database assistant. How can I help you?
-          </p>
+        <div class="bg-light-100/20 backdrop-blur-md max-w-[250px] rounded-lg p-4 border border-light-200/20">
+          <p class="text-light-100 mb-2">Hi! I'm your database assistant. How can I help you?</p>
         </div>
       </div>
     </div>
 
     <!-- Conversation History -->
-    <div
-      *ngFor="let message of chatHistory"
-      class="flex gap-3"
-      [class.flex-row-reverse]="message.role === 'user'"
-    >
-      <!-- AI Avatar -->
-      <div
-        class="w-8 h-8 rounded-full bg-light-100 flex items-center justify-center shrink-0"
-        *ngIf="message.role === 'ai'"
-      >
-        <ng-icon name="ionSparkles" class="text-light-100"></ng-icon>
+    <div *ngFor="let entry of conversationHistory" class="flex gap-3" [class.flex-row-reverse]="entry.type === 'user'">
+      <!-- Avatars -->
+      <div *ngIf="entry.type === 'ai'" class="w-8 h-8 rounded-full bg-light-100 flex items-center justify-center shrink-0">
+        <ng-icon name="ionSparkles" class="text-dark-100"></ng-icon>
       </div>
-
-      <!-- User Avatar -->
-      <div
-        class="w-8 h-8 rounded-full bg-light-100 flex items-center justify-center shrink-0"
-        *ngIf="message.role === 'user'"
-      >
-        <ng-icon name="ionPerson"></ng-icon>
+      <div *ngIf="entry.type === 'user'" class="w-8 h-8 rounded-full bg-light-100 flex items-center justify-center shrink-0">
+        <ng-icon name="ionPerson" class="text-dark-100"></ng-icon>
       </div>
 
       <!-- Message Bubble -->
-      <div
-        [class]="[
-          'rounded-xl p-3 md:p-4 max-w-[80%] md:max-w-[320px] space-y-2 md:space-y-3',
-      message.role === 'ai' 
-        ? 'bg-light-100/30 border border-light-200/20'
-        : 'bg-dark-100 border border-light-200/20'
-        ]"
-      >
-        <p
-          class="text-light-100 bg-light-100/30 text-sm md:text-base w-full px-2 py-1 md:px-3 md:py-1.5 rounded-md"
-        >
-          {{ message.content }}
-        </p>
+      <div [class]="[
+        'rounded-xl p-3 md:p-4 max-w-[80%] md:max-w-[320px] space-y-2 md:space-y-3',
+        entry.type === 'ai' ? 'bg-light-100/30 border border-light-200/20' : 
+        entry.type === 'error' ? 'bg-red-500/20 border-red-500/40' :
+        'bg-dark-100 border border-light-200/20'
+      ]">
+        <!-- Processing Indicator -->
+        <div *ngIf="entry.type === 'processing'" class="flex items-center gap-2 text-light-100">
+          <div class="dot-flashing"></div>
+          <span class="text-sm">Analyzing your request...</span>
+        </div>
 
-        <!-- Results Display -->
-        <div
-          *ngIf="message.results?.length"
-          class="bg-light-100/20 backdrop-blur-md rounded-lg p-2 md:p-3 mt-2 md:mt-3"
-        >
-          <div class="grid gap-1 md:gap-2">
-            <div
-              *ngFor="let item of message.results"
-              class="p-2 md:p-3 bg-dark-100 rounded-lg transition-colors"
+        <!-- Message Content -->
+        <div *ngIf="entry.type !== 'processing'">
+          <p class="text-light-100 text-sm md:text-base">{{ entry.content }}</p>
+
+          <!-- Suggestions -->
+          <div *ngIf="entry.suggestions?.length" class="mt-2 flex flex-wrap gap-2">
+            <button 
+              *ngFor="let suggestion of entry.suggestions"
+              (click)="handleSuggestion(suggestion)"
+              class="px-3 py-1 text-xs bg-light-100/20 hover:bg-light-100/40 text-light-100 rounded-full transition-colors"
             >
-              <div class="flex items-center gap-3 text-light-100">
-                <ng-icon
-                  [name]="item.name ? 'ionPersonCircle' : 'ionBriefcase'"
-                  class="text-light-100 text-xl"
-                ></ng-icon>
-                <div>
-                  <p class="font-medium text-light-100">
-                    {{ item.name || item.title }}
-                  </p>
-                  <p class="text-sm text-light-200">
-                    {{ item.email || item.company }}
-                  </p>
+              {{ suggestion }}
+            </button>
+          </div>
+
+          <!-- Query Results -->
+          <div *ngIf="entry.data" class="mt-3 space-y-2">
+            <!-- Count Display -->
+            <div *ngIf="entry.data.count !== undefined" class="text-light-200 text-sm">
+              Found {{ entry.data.count }} matching records
+            </div>
+
+            <!-- Detailed Results -->
+            <div *ngIf="!entry.data.count && entry.data.length" class="space-y-2">
+              <div *ngFor="let item of entry.data" class="p-3 bg-dark-100/50 rounded-lg">
+                <div class="flex items-center gap-3 text-light-100">
+                  <ng-icon [name]="item.name ? 'ionPersonCircle' : 'ionBriefcase'" class="text-xl"></ng-icon>
+                  <div>
+                    <p class="font-medium">{{ item.name || item.title }}</p>
+                    <p class="text-xs text-light-200">{{ item.email || item.company }}</p>
+                  </div>
+                </div>
+                <div *ngIf="item.skills?.length" class="mt-2 flex flex-wrap gap-1">
+                  <span *ngFor="let skill of item.skills" 
+                        class="px-2 py-1 text-xs bg-light-100/20 rounded-md">
+                    {{ skill }}
+                  </span>
                 </div>
               </div>
-              <div class="flex flex-wrap gap-1 md:gap-2 mt-1 md:mt-2">
-                <span
-                  *ngFor="let skill of item.skills"
-                  class="px-2 py-0.5 md:px-3 md:py-1.5 text-xs bg-light-100/20 backdrop-blur-md text-light-100 rounded-md"
-                >
-                  {{ skill }}
-                </span>
-              </div>
             </div>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="entry.type === 'error'" class="mt-2 text-red-300 text-sm">
+            {{ entry.content }}
           </div>
         </div>
       </div>
@@ -117,29 +100,14 @@
 
     <!-- Loading Indicator -->
     <div *ngIf="loading" class="flex gap-3">
-      <div
-        class="w-8 h-8 rounded-full bg-light-100 flex items-center justify-center"
-      >
-        <ng-icon
-          name="ionSparkles"
-          class="text-[var(--color-light-100)]"
-        ></ng-icon>
+      <div class="w-8 h-8 rounded-full bg-light-100 flex items-center justify-center">
+        <ng-icon name="ionSparkles" class="text-dark-100"></ng-icon>
       </div>
-      <div
-        class="bg-[var(--color-dark-100)] rounded-xl p-3 border border-[var(--color-light-200)/20]"
-      >
+      <div class="bg-dark-100 rounded-xl p-3 border border-light-200/20">
         <div class="flex gap-1.5">
-          <div
-            class="w-2 h-2 bg-[var(--color-light-100)] rounded-full animate-bounce"
-          ></div>
-          <div
-            class="w-2 h-2 bg-[var(--color-light-100)] rounded-full animate-bounce"
-            style="animation-delay: 0.2s"
-          ></div>
-          <div
-            class="w-2 h-2 bg-[var(--color-light-100)] rounded-full animate-bounce"
-            style="animation-delay: 0.4s"
-          ></div>
+          <div class="w-2 h-2 bg-light-100 rounded-full animate-bounce"></div>
+          <div class="w-2 h-2 bg-light-100 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+          <div class="w-2 h-2 bg-light-100 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
         </div>
       </div>
     </div>
@@ -153,16 +121,16 @@
         placeholder="How can I help?..."
         (keyup.enter)="submitQuery()"
         [disabled]="loading"
-        class="w-[65%] overflow-auto hide-scrollbar  h-full p-2 md:p-3 pr-20 md:pr-24 bg-dark-100 text-light-100 rounded-xl border-2 border-light-200/80 resize-none placeholder-light-200 transition-all text-sm md:text-base"
+        class="w-full h-full p-2 md:p-3 pr-20 bg-dark-100 text-light-100 rounded-xl border-2 border-light-200/80 resize-none placeholder-light-200 transition-all text-sm md:text-base"
         rows="1"
       ></textarea>
       <button
         (click)="submitQuery()"
         [disabled]="loading"
-        class="absolute  flex items-center right-2 top-1/2 -translate-y-1/2 p-1.5 md:p-2 w-20 bg-light-100/60 hover:bg-light-100/40 text-primary rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="absolute flex items-center right-2 top-1/2 -translate-y-1/2 p-1.5 md:p-2 w-20 bg-light-100/60 hover:bg-light-100/40 text-primary rounded-xl transition-colors disabled:opacity-50"
       >
-      <ng-icon name="ionPaperPlane" class="text-base md:text-lg"></ng-icon>
-      <p class=" ml-1 text-sm text-primary">Send</p>
+        <ng-icon name="ionPaperPlane" class="text-base md:text-lg"></ng-icon>
+        <span class="ml-1 text-sm text-primary">Send</span>
       </button>
     </div>
   </div>

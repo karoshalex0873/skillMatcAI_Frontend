@@ -64,3 +64,63 @@ export interface Applicant {
   resume:File|string
   coverLetter: string;
 }
+
+
+export interface JobApplication {
+  id: string;
+  applicantId: string;
+  jobId: string;
+  status: string;
+}
+
+export type ApplicationStatus = 'pending' | 'reviewed' | 'accepted' | 'rejected';
+
+// types.ts
+
+export interface ApplicationDetails {
+  applicationId: number;
+  status: ApplicationStatus;
+  appliedAt: string; // Keep as string or convert to Date
+  isUpdating?: boolean;
+  job: {
+    id: number;
+    title: string;
+  };
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    cv: string | null;
+    skills: string[] | null; 
+  };
+}
+
+
+// models/interview.model.ts
+export interface Interview {
+  interview_id: number;
+  application: {
+    id: number;
+    user: {
+      name: string;
+    };
+  };
+  job: {
+    title: string;
+  };
+  mode: string;
+  scheduledAt: string;
+  notes: string;
+  status: string;
+}
+
+// models/application.model.ts
+export interface InterviewApplication {
+  id: number;
+  job: {
+    title: string;
+  };
+  user: {
+    name: string;
+  };
+}

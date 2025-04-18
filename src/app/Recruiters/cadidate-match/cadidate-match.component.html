@@ -1,93 +1,129 @@
-<p class="text-light-100 text-xl font-semibold mb-4">Candidate Matches</p>
-
-<div class="bg-light-100/20 w-full border border-light-100/20 p-4 rounded-xl">
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+<div class="p-4 max-w-6xl mx-auto">
+  <!-- Status Messages -->
+  <div class=" absolute  z-50 space-y-2 w-80">
     <div
-      *ngFor="let applicant of applicants"
-      class="bg-dark-100/50 backdrop-blur-md rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow duration-300 group"
+      *ngIf="errorMessage"
+      class="p-4 bg-red-600/40 backdrop-blur-md text-light-100 border border-light-100 rounded-lg flex justify-between items-center animate-fade-in"
     >
-      <!-- Top section -->
-      <div class="flex items-start justify-between mb-3">
-        <div class="flex flex-col space-y-1">
-          <h3 class="text-light-100 text-lg font-bold transition-colors">
-            {{ applicant.position }}
-          </h3>
-          <p class="text-light-200 text-sm italic">{{ applicant.name }}</p>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div class="h-px bg-light-100/20 rounded w-full my-3"></div>
-
-      <!-- Skills -->
-      <div class="flex flex-wrap gap-2 mb-4">
-        <span
-          class="px-3 py-1 bg-primary/10 text-light-100 border-light-100 text-xs font-medium rounded-full"
-        >
-          {{ applicant.skills }}
-        </span>
-      </div>
-
-      <!-- Resume and Cover Letter -->
-      <div class="text-light-200 text-sm space-y-2 mb-4">
-        <p class="flex items-center gap-2">
-          <ng-icon
-            name="ionDocumentText"
-            class="text-primary text-base"
-          ></ng-icon>
-          {{ applicant.resume }}
-        </p>
-        <p class="flex items-center gap-2">
-          <ng-icon name="ionMailOpen" class="text-primary text-base"></ng-icon>
-          {{applicant.coverLetter }}
-        </p>
-      </div>
-
-      <!-- Hire Button -->
+      {{ errorMessage }}
       <button
-        (click)="openHireModal(applicant)"
-        class="mt-auto w-full py-2 bg-light-100 text-dark-100 rounded-md transition"
+        (click)="errorMessage = ''"
+        class="text-light-100 text-2xl"
       >
-        Hire
+        ×
+      </button>
+    </div>
+    <div
+      *ngIf="successMessage"
+      class="p-4 bg-green-500/40 backdrop-blur-md border border-light-100  text-light-100 rounded-lg flex justify-between items-center animate-fade-in"
+    >
+      {{ successMessage }}
+      <button
+        (click)="successMessage = ''"
+        class="text-white/80 hover:text-white"
+      >
+        ×
       </button>
     </div>
   </div>
 
-  <!-- Hire Modal -->
-  <div *ngIf="selectedApplicant" class=" max-w-xs absolute  rounded-md z-50 -translate-y-64 bg-light-100/10 backdrop-blur-md">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-light-100 mb-2">
+      Applications Management
+    </h1>
+    <div class="flex gap-4">
+      <button
+        (click)="loadApplications()"
+        class="px-4 py-2 bg-light-100/80 text-dark-100 rounded-md text-sm cursor-pointer "
+      >
+        Refresh List
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-8">
+    <div 
+    class="w-full flex justify-center items-center"
+    ><span class="loader"></span></div>
+    <p class="mt-4 text-gray-400">Loading applications...</p>
+  </div>
+
+  <!-- Applications Grid -->
+  <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div
-      class="bg-dark-200 text-dark-100 rounded-xl w-full max-w-md p-6 shadow-lg relative"
+      *ngFor="let app of applications"
+      class="bg-light-100/8 rounded-lg p-4 transition-colors"
     >
-      <h2 class="text-xl font-semibold mb-4">
-        Hire {{ selectedApplicant.name }}
-      </h2>
-
-      <p class="mb-2">
-        <strong>Position:</strong> {{ selectedApplicant.position }}
-      </p>
-      <p class="mb-2">
-        <strong>Skills:</strong> {{ selectedApplicant.skills }}
-      </p>
-      <p class="mb-4">
-        <strong>Cover Letter:</strong> {{ selectedApplicant.coverLetter }}
-      </p>
-
-      <!-- Buttons -->
-      <div class="flex justify-end gap-2">
-        <button
-          (click)="closeHireModal()"
-          class="px-4 py-2 rounded-md bg-light-100 text-dark-100 hover:bg-light-200 transition"
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="text-lg font-semibold text-light-100">
+            {{ app.user.name }}
+          </h3>
+          <p class="text-sm italic text-light-200/80">{{ app.user.email }}</p>
+        </div>
+        <span
+          [class]="statusClasses(app.status)"
+          class="px-3 py-1 rounded-md text-sm"
         >
-          Cancel
-        </button>
+          {{ app.status | titlecase }}
+        </span>
+      </div>
 
-        <button
-          (click)="confirmHire()"
-          class="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/80 transition"
+      <div class="mb-4">
+        <h4 class="text-light-200 font-medium mb-1">{{ app.job.title }}</h4>
+        <p class="text-sm text-light-200">
+          Applied on {{ app.appliedAt | date : "mediumDate" }}
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-4">
+        <span
+        *ngFor="let skill of app.user.skills || []"
+          class="px-2 py-1 bg-light-100/20 text-light-200 rounded-sm backdrop-blur-md text-sm"
         >
-          Confirm Hire
-        </button>
+          {{ skill }}
+        </span>
+      </div>
+
+      <div class="flex items-center justify-between gap-4">
+        <select
+          [value]="app.status"
+          (change)="updateStatus(app.applicationId, $event)"
+          class="bg-dark-100 text-light-100 px-3 py-2 rounded-md border border-gray-600 focus:border-light-200 focus:ring-1 focus:ring-light-100 flex-1"
+        >
+          <option value="pending">Pending</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="accepted">Accepted</option>
+          <option value="rejected">Rejected</option>
+        </select>
+
+        <div class="flex gap-2">
+          <a
+            [href]="app.user.cv"
+            target="_blank"
+            class="px-3 bg-light-100 rounded-md py-2 text-dark-100  flex fl justify-center items-center gap-1 text-xs"
+          >
+          <span class="text-dark-100 text-sm"><ng-icon name="ionDocument"></ng-icon></span>
+            View CV
+          </a>
+          <button
+            (click)="deleteApplication(app.applicationId)"
+            class="px-3 py-2 text-red-700 transition-colors text-sm bg-light-100 rounded-md"
+          >
+          <span>
+            <ng-icon name="ionTrash"></ng-icon>
+          </span>
+            Delete
+          </button>
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && applications?.length === 0" class="text-center py-8">
+    <p class="text-gray-400">No applications found</p>
   </div>
 </div>

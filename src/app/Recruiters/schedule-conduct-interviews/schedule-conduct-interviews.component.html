@@ -1,62 +1,90 @@
 <!-- schedule-conduct-interviews.component.html -->
-<div
-  class="flex flex-col h-full bg-dark-100 p-6 rounded-xl border border-light-100/20"
->
+<div class="flex flex-col h-full bg-dark-100 p-6 rounded-xl border border-light-100/20">
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-500/20 text-red-300 rounded-lg">
+    {{ errorMessage }}
+  </div>
+
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
       <h2 class="text-2xl font-bold text-light-100">Interview Manager</h2>
       <p class="text-light-200 mt-1">
-        Schedule and conduct candidate interviews
+        Schedule and manage candidate interviews
       </p>
     </div>
-    <button
-      class="bg-primary/80 hover:bg-primary text-light-100 px-4 py-2 rounded-lg transition-colors"
-    >
-      <ng-icon name="ionAdd" class="mr-2"></ng-icon>
-      New Interview
-    </button>
   </div>
 
   <!-- Main Content -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
     <!-- Schedule Section -->
-    <div
-      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
-    >
+    <div class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20">
       <h3 class="text-xl font-semibold text-light-100 mb-4">
         Schedule New Interview
       </h3>
-      <form class="space-y-4">
-        <div>
-          <label class="block text-light-200 mb-2">Candidate</label>
-          <input
-            type="text"
-            class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
-          />
+      
+      <form class="space-y-4" (ngSubmit)="scheduleInterview()">
+        <!-- Form Error -->
+        <div *ngIf="formError" class="p-3 bg-red-500/20 text-red-300 rounded-lg">
+          {{ formError }}
         </div>
 
+        <!-- Application Select -->
+        <div>
+          <label class="block text-light-200 mb-2">Application</label>
+          <select
+            [(ngModel)]="selectedApplicationId"
+            name="application"
+            class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+            required
+            [disabled]="isLoadingApplications"
+          >
+            <option *ngIf="isLoadingApplications" disabled>
+              Loading applications...
+            </option>
+            <option *ngIf="!isLoadingApplications && applications.length === 0" disabled>
+              No applications found
+            </option>
+            <option *ngFor="let app of applications" [value]="app.id">
+              {{ app.job.title }} - {{ app.user.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Date/Time Picker -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-light-200 mb-2">Date</label>
             <input
               type="date"
+              [(ngModel)]="selectedDate"
+              name="date"
               class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+              required
+              [disabled]="isSubmitting"
             />
           </div>
           <div>
             <label class="block text-light-200 mb-2">Time</label>
             <input
               type="time"
+              [(ngModel)]="selectedTime"
+              name="time"
               class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+              required
+              [disabled]="isSubmitting"
             />
           </div>
         </div>
 
+        <!-- Interview Type -->
         <div>
           <label class="block text-light-200 mb-2">Interview Type</label>
           <select
+            [(ngModel)]="selectedMode"
+            name="mode"
             class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+            [disabled]="isSubmitting"
           >
             <option value="technical">Technical Interview</option>
             <option value="hr">HR Interview</option>
@@ -64,34 +92,58 @@
           </select>
         </div>
 
+        <!-- Notes -->
+        <div>
+          <label class="block text-light-200 mb-2">Notes</label>
+          <textarea
+            [(ngModel)]="notes"
+            name="notes"
+            class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+            [disabled]="isSubmitting"
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
         <button
-          class="w-full bg-primary/80 hover:bg-primary text-light-100 px-4 py-3 rounded-lg transition-colors"
+          type="submit"
+          class="w-full bg-primary/80 hover:bg-primary text-light-100 px-4 py-3 rounded-lg transition-colors disabled:opacity-50"
+          [disabled]="isSubmitting"
         >
-          Schedule Interview
+          <span *ngIf="!isSubmitting">Schedule Interview</span>
+          <span *ngIf="isSubmitting">Scheduling...</span>
         </button>
       </form>
     </div>
 
     <!-- Interviews List -->
-    <div
-      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20 overflow-auto"
-    >
+    <div class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20 overflow-auto">
       <h3 class="text-xl font-semibold text-light-100 mb-4">
-        Scheduled Interviews
+        Upcoming Interviews
       </h3>
 
-      <div class="space-y-4">
-        <!-- Interview Item -->
+      <!-- Loading State -->
+      <div *ngIf="isLoadingInterviews" class="text-center py-4 text-light-200">
+        <ng-icon name="ionSync" class="animate-spin mr-2"></ng-icon>
+        Loading interviews...
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoadingInterviews && interviews.length === 0" class="text-center py-4 text-light-200">
+        No upcoming interviews found
+      </div>
+
+      <!-- Interviews List -->
+      <div class="space-y-4" *ngIf="!isLoadingInterviews && interviews.length > 0">
         <div
-          *ngFor="let interview of interviews"
+        *ngFor="let interview of interviews"
           class="bg-dark-100 p-4 rounded-lg border border-light-100/20 hover:border-primary/40 transition-colors"
         >
           <div class="flex items-center justify-between mb-2">
             <div>
               <h4 class="text-light-100 font-medium">
-                {{ interview.candidate }}
+                {{ interview.application.user.name }}
               </h4>
-              <p class="text-light-200 text-sm">{{ interview.position }}</p>
+              <p class="text-light-200 text-sm">{{ interview.job.title }}</p>
             </div>
             <span class="px-2 py-1 text-xs text-light-100/80">
               {{ interview.status }}
@@ -101,22 +153,24 @@
           <div class="flex items-center justify-between text-sm text-light-200">
             <div class="flex items-center gap-2">
               <ng-icon name="ionCalendar" class="text-primary"></ng-icon>
-              <span>{{ interview.date }}</span>
+              <span>{{ interview.scheduledAt | date:'yyyy-MM-dd' }}</span>
             </div>
             <div class="flex items-center gap-2">
               <ng-icon name="ionTime" class="text-primary"></ng-icon>
-              <span>{{ interview.time }}</span>
+              <span>{{ interview.scheduledAt | date:'HH:mm' }}</span>
             </div>
           </div>
 
           <div class="mt-3 flex gap-2">
             <button
+              (click)="editInterview(interview)"
               class="text-xs bg-primary/20 text-primary px-3 py-1 rounded-md hover:bg-primary/30"
             >
               <ng-icon name="ionPencil" class="mr-1"></ng-icon>
               Edit
             </button>
             <button
+              (click)="cancelInterview(interview.interview_id)"
               class="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-md hover:bg-red-500/30"
             >
               <ng-icon name="ionTrash" class="mr-1"></ng-icon>
@@ -128,15 +182,92 @@
     </div>
   </div>
 
-  <!-- Conduct Interview Modal -->
+  <!-- Edit Interview Modal -->
   <div
-    *ngIf="selectedInterview"
+    *ngIf="editingInterview"
     class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center"
   >
-    <div
-      class="bg-dark-100 rounded-xl p-6 w-full max-w-2xl border border-light-100/20"
-    >
-      <!-- Modal Content -->
+    <div class="bg-dark-100 rounded-xl p-6 w-full max-w-2xl border border-light-100/20">
+      <h3 class="text-xl font-semibold text-light-100 mb-4">Edit Interview</h3>
+      
+      <!-- Form Error -->
+      <div *ngIf="formError" class="p-3 bg-red-500/20 text-red-300 rounded-lg mb-4">
+        {{ formError }}
+      </div>
+
+      <form (ngSubmit)="updateInterview()" class="space-y-4">
+        <!-- Interview Type -->
+        <div>
+          <label class="block text-light-200 mb-2">Interview Type</label>
+          <select
+            [(ngModel)]="editingInterview.mode"
+            name="mode"
+            class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+            [disabled]="isUpdating"
+          >
+            <option value="technical">Technical Interview</option>
+            <option value="hr">HR Interview</option>
+            <option value="cultural">Cultural Fit Interview</option>
+          </select>
+        </div>
+
+        <!-- Date/Time Picker -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-light-200 mb-2">Date</label>
+            <input
+              type="date"
+              [(ngModel)]="editingDate"
+              name="date"
+              class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+              required
+              [disabled]="isUpdating"
+            />
+          </div>
+          <div>
+            <label class="block text-light-200 mb-2">Time</label>
+            <input
+              type="time"
+              [(ngModel)]="editingTime"
+              name="time"
+              class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+              required
+              [disabled]="isUpdating"
+            />
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div>
+          <label class="block text-light-200 mb-2">Notes</label>
+          <textarea
+            [(ngModel)]="editingInterview.notes"
+            name="notes"
+            class="w-full bg-dark-100 border border-light-100/20 rounded-lg p-3 text-light-100 focus:ring-2 focus:ring-primary"
+            [disabled]="isUpdating"
+          ></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end gap-4">
+          <button
+            type="button"
+            (click)="cancelEdit()"
+            class="px-4 py-2 text-light-200 hover:text-light-100"
+            [disabled]="isUpdating"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="bg-primary/80 hover:bg-primary text-light-100 px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+            [disabled]="isUpdating"
+          >
+            <span *ngIf="!isUpdating">Save Changes</span>
+            <span *ngIf="isUpdating">Saving...</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

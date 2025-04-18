@@ -1,9 +1,11 @@
 import { query } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IconsModule } from '../../helpers/icons.module';
+import { environment } from '../../helpers/environment';
+import { JobService } from '../../service/job.service';
 
 interface ResultItem {
   id: string;
@@ -16,26 +18,31 @@ interface ResultItem {
   experience?: string;
 }
 
-interface Message {
-  role: 'user' | 'ai';
+interface ConversationEntry {
+  type: 'user' | 'ai' | 'processing' | 'error';
   content: string;
-  results?: ResultItem[];
+  data?: any;
+  suggestions?: string[];
+  context?: any;
+  timestamp: Date;
 }
 
 @Component({
   selector: 'app-querry-database',
-  imports: [CommonModule,FormsModule,HttpClientModule,IconsModule],
+  imports: [CommonModule,FormsModule,IconsModule],
   templateUrl: './querry-database.component.html',
   styleUrl: './querry-database.component.css'
 })
 export class QuerryDatabaseComponent {
 
   userQuery = '';
-  chatHistory: any[] = [];
+  conversationHistory: ConversationEntry[] = [];
   loading = false;
 
-  constructor(private http: HttpClient) {}
   @ViewChild('chatContainer') private chatContainer!:ElementRef
+
+  constructor(private queryAIService:JobService ){}
+
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -51,40 +58,52 @@ export class QuerryDatabaseComponent {
 
   async submitQuery() {
     if (!this.userQuery.trim() || this.loading) return;
-
+  
     // Add user message
-    this.chatHistory.push({
-      role: 'user',
+    this.conversationHistory.push({
+      type: 'user',
       content: this.userQuery,
       timestamp: new Date()
     });
 
+    this.conversationHistory.push({
+      type: 'processing',
+      content: 'Processing your query...',
+      timestamp: new Date()
+    });
+  
     const queryText = this.userQuery;
     this.userQuery = '';
     this.loading = true;
-
+  
     try {
-      const response = await this.http.post<any>('YOUR_API_ENDPOINT', {
-        query: queryText
-      }).toPromise();
+      const response = await this.queryAIService.sendQuery(queryText).toPromise();
+
+      this.conversationHistory = this.conversationHistory.filter(e => e.type !== 'processing');
 
       // Add AI response
-      this.chatHistory.push({
-        role: 'ai',
-        content: `Here's what I found for "${queryText}":`,
-        results: response.data || [],
+      this.conversationHistory.push({
+        type: 'ai',
+        content: response?.data?.content ?? 'No response content available',
+        data: response?.data ?? null,
+        suggestions: response?.data?.suggestions ?? [],
         timestamp: new Date()
       });
-
+  
     } catch (error) {
-      this.chatHistory.push({
-        role: 'ai',
+      this.conversationHistory .push({
+        type: 'error',
         content: 'Sorry, I encountered an error processing your request.',
-        isError: true,
         timestamp: new Date()
       });
     } finally {
       this.loading = false;
     }
   }
+  
+  handleSuggestion(suggestion: string) {
+    this.userQuery = suggestion;
+    this.submitQuery();
+  }
+  
 }

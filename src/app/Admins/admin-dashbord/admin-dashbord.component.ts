@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IconsModule } from '../../helpers/icons.module';
-import {RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
+import {Router, RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
+import { UserService } from '../../service/user.service';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-admin-dashbord',
@@ -11,17 +13,21 @@ import {RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angula
 })
 export class AdminDashbordComponent {
 
-  //avatarUrl image
-  avatarUrl:string='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYLCZyGFOpPKEpvJ5ux8_jmjGhGdPwNKFwPA&s'
+  authService = inject(AuthService);
+  userInfo = inject(UserService);
+  router = inject(Router);
 
-
+  // User Info
+  name: string = '';
+  userName: string = '';
+  profileImage: string | null = null;
+  initial: string = '';
+  avatarUrl: string = '';
+  avatarBg: string = '#4D96FF';
+  
+ 
   isMobileMenuOpen = false;
   links = [
-    {
-      path: 'users',
-      label: 'Dashboard',
-      icon: 'ionSpeedometer'
-    },
     {
       path: 'users',
       label: 'Manage Users',
@@ -43,8 +49,44 @@ export class AdminDashbordComponent {
       icon: 'ionShieldCheckmark'
     }
   ]
-  //logout function
+  // On init, fetch user info
+  ngOnInit(): void {
+    this.userInfo.getUserInfo().subscribe({
+      next: (data) => {
+        this.name = data.user.name;
+        const firstName = this.name.split(' ')[0];
+        this.userName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+
+        if (data.user.avatar) {
+          this.profileImage = data.user.avatar;
+          this.avatarUrl = this.profileImage ?? '';
+        } else {
+          this.initial = this.userName.charAt(0);
+          this.avatarUrl = '';
+          this.avatarBg = this.getRandomBg();
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch user info:', err);
+      }
+    });
+  }
+
+  // Random background color for initials
+  getRandomBg(): string {
+    const colors = ['#FF6B6B', '#6BCB77', '#4D96FF', '#FFCD3C', '#845EC2'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  // Logout function
   logout() {
-    console.log('Logged out');
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        console.error('Logout failed');
+      }
+    });
   }
 }

@@ -1,5 +1,7 @@
 <!-- system-performance.component.html -->
-<div class="flex flex-col h-full bg-dark-100 p-6 rounded-xl border border-light-100/20">
+<div
+  class="flex flex-col h-[75vh] overflow-auto w-full bg-dark-100 p-6 rounded-xl border border-light-100/20 hide-scrollbar"
+>
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
@@ -7,22 +9,35 @@
       <p class="text-light-200 mt-1">Real-time system health monitoring</p>
     </div>
     <div class="flex items-center gap-2 text-light-200">
-      <ng-icon name="ionRefresh" class="hover:text-primary cursor-pointer" (click)="refreshMetrics()"></ng-icon>
-      <span class="text-sm">Last updated: {{ lastUpdated | date:'HH:mm:ss' }}</span>
+      <ng-icon
+        name="ionRefresh"
+        class="hover:text-primary cursor-pointer"
+        (click)="refreshMetrics()"
+      ></ng-icon>
+      <span class="text-sm"
+        >Last updated: {{ lastUpdated | date : "HH:mm:ss" }}</span
+      >
     </div>
   </div>
 
   <!-- Metrics Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <!-- CPU Usage -->
-    <div class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20">
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
+    >
       <div class="flex items-center justify-between">
         <div>
           <p class="text-light-200 text-sm">CPU Usage</p>
-          <p class="text-2xl font-bold text-light-100 mt-1">{{ metrics.cpu }}%</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">
+            {{ metrics.cpu }}%
+          </p>
         </div>
         <div class="p-2 bg-blue-500/20 rounded-lg">
-          <ng-icon name="ionSpeedometer" class="text-2xl text-blue-400"></ng-icon>
+          <ng-icon
+            name="ionSpeedometer"
+            class="text-2xl text-blue-400"
+          ></ng-icon>
         </div>
       </div>
       <div class="h-16 mt-3">
@@ -31,14 +46,21 @@
     </div>
 
     <!-- Memory Usage -->
-    <div class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20">
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
+    >
       <div class="flex items-center justify-between">
         <div>
           <p class="text-light-200 text-sm">Memory Usage</p>
-          <p class="text-2xl font-bold text-light-100 mt-1">{{ metrics.memory }}%</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">
+            {{ metrics.memory }}%
+          </p>
         </div>
         <div class="p-2 bg-purple-500/20 rounded-lg">
-          <ng-icon name="ionHardwareChip" class="text-2xl text-purple-400"></ng-icon>
+          <ng-icon
+            name="ionHardwareChip"
+            class="text-2xl text-purple-400"
+          ></ng-icon>
         </div>
       </div>
       <div class="h-16 mt-3">
@@ -47,11 +69,17 @@
     </div>
 
     <!-- Disk I/O -->
-    <div class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20">
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
+    >
       <div class="flex items-center justify-between">
         <div>
           <p class="text-light-200 text-sm">Disk Activity</p>
-          <p class="text-2xl font-bold text-light-100 mt-1">{{ metrics.disk }}%</p>
+          <div *ngFor="let disk of metrics.disks">
+            <p class="text-sm text-light-200">
+              {{ disk.mount }}: <span class="text-2xl font-bold text-light-100">{{ disk.usage }}%</span>
+            </p>
+          </div>  
         </div>
         <div class="p-2 bg-green-500/20 rounded-lg">
           <ng-icon name="ionSave" class="text-2xl text-green-400"></ng-icon>
@@ -63,11 +91,15 @@
     </div>
 
     <!-- Network -->
-    <div class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20">
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-4 rounded-xl border border-light-100/20"
+    >
       <div class="flex items-center justify-between">
         <div>
           <p class="text-light-200 text-sm">Network</p>
-          <p class="text-2xl font-bold text-light-100 mt-1">{{ metrics.network }} MB/s</p>
+          <p class="text-2xl font-bold text-light-100 mt-1">
+            {{ metrics.network }} MB/s
+          </p>
         </div>
         <div class="p-2 bg-red-500/20 rounded-lg">
           <ng-icon name="ionGlobe" class="text-2xl text-red-400"></ng-icon>
@@ -82,7 +114,9 @@
   <!-- Main Charts -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
     <!-- CPU/Memory Trends -->
-    <div class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20">
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
+    >
       <h3 class="text-lg font-semibold text-light-100 mb-4">Resource Trends</h3>
       <div class="h-64">
         <canvas #resourceChart></canvas>
@@ -90,8 +124,12 @@
     </div>
 
     <!-- Disk Usage -->
-    <div class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20">
-      <h3 class="text-lg font-semibold text-light-100 mb-4">Disk Utilization</h3>
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
+    >
+      <h3 class="text-lg font-semibold text-light-100 mb-4">
+        Disk Utilization
+      </h3>
       <div class="h-64">
         <canvas #storageChart></canvas>
       </div>
@@ -100,35 +138,62 @@
 
   <!-- Server Status -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20">
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
+    >
       <h3 class="text-lg font-semibold text-light-100 mb-4">Service Status</h3>
       <div class="space-y-3">
-        <div *ngFor="let service of services" class="flex items-center justify-between p-3 hover:bg-dark-100/30 rounded-lg">
+        <!-- Update service status to use real data -->
+        <div
+          *ngFor="let service of serviceStatus"
+          class="flex items-center justify-between p-3 hover:bg-dark-100/30 rounded-lg"
+        >
           <div class="flex items-center gap-3">
-            <span class="w-2 h-2 rounded-full" 
-                  [class.bg-green-400]="service.status === 'online'"
-                  [class.bg-red-400]="service.status === 'offline'"
-                  [class.bg-yellow-400]="service.status === 'degraded'"></span>
+            <span
+              class="w-2 h-2 rounded-full"
+              [class.bg-green-400]="service.status === 'online'"
+              [class.bg-red-400]="service.status === 'offline'"
+              [class.bg-yellow-400]="service.status === 'degraded'"
+            ></span>
             <span class="text-light-100">{{ service.name }}</span>
           </div>
-          <span class="text-light-200 text-sm">{{ service.status | uppercase }}</span>
+          <span class="text-light-200 text-sm">{{
+            service.status | uppercase
+          }}</span>
+        </div>
+
+        <!-- Update storage chart to show real disk data -->
+        <div class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20">
+          <h3 class="text-lg font-semibold text-light-100 mb-4">Disk Utilization</h3>
+          <div class="h-64">
+            <canvas #storageChart></canvas>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Activity Log -->
-    <div class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20">
+    <div
+      class="bg-dark-100/80 backdrop-blur-md p-6 rounded-xl border border-light-100/20"
+    >
       <h3 class="text-lg font-semibold text-light-100 mb-4">Recent Events</h3>
       <div class="space-y-3 max-h-64 overflow-auto">
-        <div *ngFor="let event of activityLog" class="p-3 bg-dark-100/30 rounded-lg">
+        <div
+          *ngFor="let event of activityLog"
+          class="p-3 bg-dark-100/30 rounded-lg"
+        >
           <div class="flex items-center gap-2 text-sm">
-            <span [class.text-red-400]="event.type === 'error'"
-                  [class.text-yellow-400]="event.type === 'warning'"
-                  [class.text-green-400]="event.type === 'info'">
+            <span
+              [class.text-red-400]="event.type === 'error'"
+              [class.text-yellow-400]="event.type === 'warning'"
+              [class.text-green-400]="event.type === 'info'"
+            >
               <ng-icon [name]="getEventIcon(event.type)"></ng-icon>
             </span>
             <span class="text-light-100 flex-1">{{ event.message }}</span>
-            <span class="text-light-200 text-xs">{{ event.timestamp | date:'HH:mm:ss' }}</span>
+            <span class="text-light-200 text-xs">{{
+              event.timestamp | date : "HH:mm"
+            }}</span>
           </div>
         </div>
       </div>
