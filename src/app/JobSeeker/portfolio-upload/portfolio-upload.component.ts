@@ -27,8 +27,11 @@ export class PortfolioUploadComponent implements OnInit {
   }
 
   private fetchInterviews(){
+    const token = sessionStorage.getItem('accessToken');
     this.http.get<any>(`${environment.apiUrl}/jobs/interview/myInterviews`,{
-      withCredentials:true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }).subscribe({
       next:(response)=>{
         this.interviewAlerts=response.interviews.map((interview:any)=>({

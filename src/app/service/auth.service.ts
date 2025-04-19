@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../helpers/environment';
+import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -28,15 +29,17 @@ export class AuthService {
     this.currentUser = null;
     localStorage.removeItem('user');
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('refreshToken');
   }
 
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient) {
     this.loadUserFromStorage();
   }
-  
 
-  private loadUserFromStorage(){
+
+  private loadUserFromStorage() {
     const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (storedUser) {
       this.currentUser = JSON.parse(storedUser);
@@ -46,34 +49,42 @@ export class AuthService {
 
   // user register
   register(userData: any) {
-    return this.http.post(`${this.apiUrl}/auth/register`, userData, {
-      withCredentials: true
-    })
+    return this.http.post(`${this.apiUrl}/auth/register`, userData,)
   }
 
 
   // user login
   login(userData: any) {
-    return this.http.post(`${this.apiUrl}/auth/login`, userData, {
-      withCredentials: true
-    })
+    return this.http.post(`${this.apiUrl}/auth/login`, userData,).pipe(
+      tap((res: any) => {
+        if (res.accessToken) {
+          sessionStorage.setItem('access_token', res.accessToken)
+          sessionStorage.setItem('refresh_token', res.refreshToken);
+        }
+        if (res.user) {
+          this.setUser(res.user)
+        }
+      })
+    )
   }
 
 
   // user logout
   logout() {
     this.clearUser()
-    return this.http.post(`${this.apiUrl}/auth/logout`, {}, {
-      withCredentials: true
-    })
+    return this.http.post(`${this.apiUrl}/auth/logout`, {})
   }
 
 
   // verify user
   verifyAuth() {
+    const token = sessionStorage.getItem('accessToken');
+    console.log("Token being sent:", token); // Debug log
+
     return this.http.get<any>(`${this.apiUrl}/auth/verify`, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
   }
-  
 }

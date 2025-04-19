@@ -36,8 +36,14 @@ export class AiAccuracyService {
   constructor(private http: HttpClient) { }
 
   getMetrics():Observable<AccuracyResponse>{
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.get<AccuracyResponse>(`${this.apiUrl}/systemAIAcurracy`,{
-      withCredentials:true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
   }
+
+  
 }

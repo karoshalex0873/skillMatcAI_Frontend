@@ -12,14 +12,23 @@ export class UserService {
   constructor(private http: HttpClient) { }
   // fuction to get detail of user eg name 
   getUserInfo(): Observable<any> {
+    const token = sessionStorage.getItem('accessToken');
     return this.http
       .get<any>(`${this.apiUrl}/auth/verify`, {
-        withCredentials: true
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
       })
   }
 
   createUser(userData: any) {
-    return this.http.post(`${this.apiUrl}/users`, userData,{withCredentials:true});
+    const token = sessionStorage.getItem('accessToken');
+
+    return this.http.post(`${this.apiUrl}/users`, userData,{
+      headers:{
+        Authorization: `Bearer ${token}`
+      }
+    });
   }
   
 }

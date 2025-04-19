@@ -11,8 +11,12 @@ export class ProfileService {
   constructor(private http: HttpClient) { }
 
   getUserProfile(): Observable<any> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.get<any>(`${environment.apiUrl}/user/info`, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }).pipe(
       catchError(error => {
         console.error('Error loading profile:', error);
@@ -23,8 +27,12 @@ export class ProfileService {
   }
 
   updateUserProfile(profileData: any): Observable<any> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.patch(`${environment.apiUrl}/user/update`, profileData, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }).pipe(
       catchError(error => {
         console.error('Error updating profile:', error);

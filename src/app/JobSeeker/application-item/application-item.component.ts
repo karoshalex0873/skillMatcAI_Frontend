@@ -32,8 +32,11 @@ export class ApplicationItemComponent {
   }
   fetchApplications() {
     this.isLoading = true
+    const token = sessionStorage.getItem('accessToken');
     this.http.get<any>(`${environment.apiUrl}/jobs/getApplications`, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }).subscribe({
       next: (res) => {
         setTimeout(() => {

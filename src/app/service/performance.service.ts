@@ -11,11 +11,15 @@ export class PerformanceService {
 
   constructor(
     private http: HttpClient
-  ){ }
+  ) { }
 
-  getPerformance(){
-    return this.http.get(`${this.apiUrl}/system-performance`,{
-      withCredentials:true
+  getPerformance() {
+    const token = sessionStorage.getItem('accessToken');
+
+    return this.http.get(`${this.apiUrl}/system-performance`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
   }
 }

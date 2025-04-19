@@ -12,12 +12,23 @@ export class AnalyticsService {
   constructor(private http: HttpClient) { }
 
   getRecruiterAnalytics() {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.get(`${this.apiUrl}/user/analytics/recruiter`, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
   }
 
   getUsersManagementData(params?: any) {
-    return this.http.get(`${this.apiUrl}/user/manageUser`, { params, withCredentials: true });
+    const token = sessionStorage.getItem('accessToken');
+
+    return this.http.get(`${this.apiUrl}/user/manageUser`, {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
   }
 }

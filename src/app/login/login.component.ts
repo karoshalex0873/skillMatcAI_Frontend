@@ -33,7 +33,7 @@ export class LoginComponent {
   ) { }
 
   onSubmit() {
-    this.errorMessage = ''; 
+    this.errorMessage = '';
 
     if (this.loginForm.valid) {
       const formData = {
@@ -44,6 +44,11 @@ export class LoginComponent {
       this.authService.login(formData).subscribe({
         next: (response: any) => {
           console.log(this.loginForm.value)
+          console.log("Login response:", response);
+          sessionStorage.setItem('accessToken', response.accessToken);
+          sessionStorage.setItem('refreshToken', response.refreshToken);
+
+
           this.authService.setUser(response.user);
 
           const role = response.user.Role;

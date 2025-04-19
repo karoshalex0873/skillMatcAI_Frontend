@@ -10,99 +10,170 @@ import { ApplicationDetails, ApplicationStatus, Interview, InterviewApplication,
 export class JobService {
   private apiUrl = environment.apiUrl
 
+
   constructor(private http: HttpClient) { }
 
   createJob(jobData: any) {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.post<{ data: Job }>(`${this.apiUrl}/jobs/create`, jobData, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
   getRecruiterJobs() {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.get<{ data: Job }>(`${this.apiUrl}/jobs/JobPost`, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
 
   //get jobs function from the api
   getJob(): Observable<Job[]> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http
       .get<{ success: boolean; data: Job[] }>(`${this.apiUrl}/jobs/getAll`, {
-        withCredentials: true // ⬅️ sends cookies like access_token
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }).pipe(map(response => response.data));
 
   }
 
   getAllApplications(): Observable<{ applications: ApplicationDetails[] }> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.get<{ applications: ApplicationDetails[] }>(
       `${this.apiUrl}/jobs/allApplications`,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
   // For job-specific applications
   getApplicationsByJob(jobId: number): Observable<{ applications: ApplicationDetails[] }> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.get<{ applications: ApplicationDetails[] }>(
       `${this.apiUrl}/jobs/${jobId}/applicant`,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
   updateApplicationStatus(applicationId: number, status: string): Observable<{ applications: ApplicationDetails[] }> {
+
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.patch<{ applications: ApplicationDetails[] }>(
       `${this.apiUrl}/jobs/${applicationId}/status`,
       { status },
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
   deleteApplication(applicationId: number): Observable<void> {
+
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.delete<void>(
       `${this.apiUrl}/jobs/applications/${applicationId}`,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
 
   sendQuery(query: string) {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.post<{ data: any }>(
       `${environment.apiUrl}/jobs/ask`,
       { question: query },
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
 
   scheduleInterview(data: any): Observable<any> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.post(`${this.apiUrl}/jobs/createInterview`, data, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
   getUpcomingInterviews(): Observable<Interview[]> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.get<{ interviews: Interview[] }>(
       `${this.apiUrl}/jobs/upcomingInterview`,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     ).pipe(map(response => response.interviews));
   }
 
   updateInterview(data: any): Observable<any> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.patch(`${this.apiUrl}/jobs/updateInterview`, data,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
   }
 
   cancelInterview(interviewId: number): Observable<any> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.delete(`${this.apiUrl}/jobs/cancel/${interviewId}`, {
-      withCredentials: true
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
   }
 
   getApplications(): Observable<InterviewApplication[]> {
+    const token = sessionStorage.getItem('accessToken');
+
     return this.http.get<{ applications: InterviewApplication[] }>(
       `${this.apiUrl}/jobs/interview/allApplications`,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     ).pipe(map(response => response.applications));
   }
 }

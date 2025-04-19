@@ -1,63 +1,71 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import {Chart, ChartConfiguration, registerables } from 'chart.js';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { IconsModule } from '../../helpers/icons.module';
+import { SecurityService } from '../../service/security.service';
 
 @Component({
   selector: 'app-platform-security',
-  imports: [CommonModule,IconsModule],
+  imports: [CommonModule, IconsModule],
   templateUrl: './platform-security.component.html',
   styleUrl: './platform-security.component.css'
 })
 export class PlatformSecurityComponent {
   @ViewChild('threatChart') threatChartRef!: ElementRef<HTMLCanvasElement>;
 
-  securityEvents = [
-    { 
-      type: 'intrusion',
-      description: 'Suspicious login attempt detected',
-      severity: 'high',
-      timestamp: new Date()
-    },
-    {
-      type: 'update',
-      description: 'Security patch applied',
-      severity: 'low',
-      timestamp: new Date()
-    },
-    {
-      type: 'breach',
-      description: 'Potential data breach prevented',
-      severity: 'medium',
-      timestamp: new Date()
-    }
-  ];
+  securityLevel = 'Loading...';
 
-  constructor() {
+  metrics = {
+    activeThreats: 0,
+    securityScore: 0,
+    updatesAvailable: 0,
+    dataEncryption: 0
+  };
+  securityEvents: any[] = [];
+  threatChartData: any;
+
+  constructor(
+    private securityService:SecurityService
+  ) {
     Chart.register(...registerables);
   }
 
-  ngAfterViewInit() {
-    this.createThreatChart();
+  ngOnInit() {
+    this.loadSecurityData();
+  }
+
+  loadSecurityData(){
+    this.securityService.getSecurityData().subscribe({
+      next:(data)=>{
+        this.securityLevel = data.securityLevel;
+        this.metrics = data.metrics;
+        this.securityEvents = data.recentEvents;
+        this.threatChartData = data.threatChartData;
+        this.createThreatChart();
+      },
+      error: (err) => console.error('Error loading security data:', err)
+    })
   }
 
   getEventIcon(type: string): string {
-    switch(type) {
-      case 'intrusion': return 'ionWarning';
-      case 'update': return 'ionCheckmarkCircle';
-      case 'breach': return 'ionAlertCircle';
+    switch (type) {
+      case 'login_attempt': return 'ionWarning';
+      case 'patch': return 'ionCheckmarkCircle';
+      case 'threat': return 'ionAlertCircle';
       default: return 'ionInformationCircle';
     }
   }
 
   createThreatChart() {
+    if (!this.threatChartData) return;
+
     new Chart(this.threatChartRef.nativeElement, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: this.threatChartData.labels,
         datasets: [{
           label: 'Threats Detected',
-          data: [45, 32, 28, 19, 12, 8],
+          data: this.threatChartData.data,
           borderColor: '#ef4444',
           tension: 0.4,
           fill: true,
@@ -73,6 +81,8 @@ export class PlatformSecurityComponent {
           y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff' } }
         }
       }
-    } as ChartConfiguration);
+    });
   }
+
+  
 }

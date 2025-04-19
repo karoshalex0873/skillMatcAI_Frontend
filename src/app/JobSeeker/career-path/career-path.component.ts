@@ -57,8 +57,17 @@ export class CareerPathComponent {
   }
 
   private loadSavedPath() {
+
+    const token = sessionStorage.getItem('accessToken');
+
     this.isLoading = true;
-    this.http.get<any>(`${environment.apiUrl}/jobs/path`, { withCredentials: true })
+    this.http.get<any>(`${environment.apiUrl}/jobs/path`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
       .subscribe({
         next: (data) => {
           if (data.milestones) {
@@ -103,12 +112,16 @@ export class CareerPathComponent {
     this.isLoading = true;
     this.errorMessage = '';
     this.forcePersist = true;
-
+    const token = sessionStorage.getItem('accessToken');
     this.http.post<any>(`${environment.apiUrl}/jobs/path`, {
       skills: this.selectedSkills,
       goal: this.selectedGoal,
       time: this.selectedTime
-    }, { withCredentials: true }).subscribe({
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).subscribe({
       next: (data) => {
         this.learningPath = this.transformApiData(data);
         this.isLoading = false;
@@ -122,8 +135,13 @@ export class CareerPathComponent {
   }
 
   resetLearningPath() {
+    const token = sessionStorage.getItem('accessToken');
     this.isLoading = true;
-    this.http.delete(`${environment.apiUrl}/jobs/path`, { withCredentials: true })
+    this.http.delete(`${environment.apiUrl}/jobs/path`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .subscribe({
         next: () => {
           this.learningPath = undefined;
@@ -142,16 +160,16 @@ export class CareerPathComponent {
   }
 
   private transformApiData(apiData: any) {
-      return {
-        milestones: apiData.milestones.map((milestone: any) => ({
-          ...milestone,
-          resources: [
-            ...this.mapResources(milestone.resources.articles, 'Article'),
-            ...this.mapResources(milestone.resources.videos, 'Video'),
-            ...this.mapResources(milestone.resources.projects, 'Project')
-          ]
-        }))
-      };
+    return {
+      milestones: apiData.milestones.map((milestone: any) => ({
+        ...milestone,
+        resources: [
+          ...this.mapResources(milestone.resources.articles, 'Article'),
+          ...this.mapResources(milestone.resources.videos, 'Video'),
+          ...this.mapResources(milestone.resources.projects, 'Project')
+        ]
+      }))
+    };
   }
 
   private mapResources(urls: string[], type: string) {
