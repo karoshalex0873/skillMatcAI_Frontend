@@ -36,7 +36,11 @@ export class JobCardComponent {
       },
       error: (err) => {
         setTimeout(() => {
-          this.errorMessage = err.error?.message || err.message
+          this.errorMessage = `Upload your CV to see the job? (update profile)`;
+        
+          setTimeout(() => {
+            this.errorMessage = ''; // Clear the error message after 3 seconds
+          }, 3000); // Show error message for 3 seconds
           this.isLoading = false;
         }, 2000);
       }
@@ -66,7 +70,7 @@ export class JobCardComponent {
       },
       error: (err) => {
         if (err.status === 400) {
-          this.errorMessage = err.error?.message || err.message;
+          this.errorMessage = `${err.error?.message || err.message} Please upload your CV`;
           setTimeout(() => this.clearMessages(), 3000); // Show error message for 3 seconds
           return;
         }

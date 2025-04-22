@@ -34,7 +34,7 @@ export class JobSeekComponent {
     // { path: 'starts', label: 'Dashboard', icon: 'ionHomeOutline' },
     { path: 'aut', label: 'Job Matches', icon: 'ionBriefcaseOutline' },
     { path: 'applications', label: 'Applications', icon: 'ionDocumentTextOutline' },
-    { path: 'profile', label: 'Skill Profile', icon: 'ionPersonCircleOutline' },
+    { path: 'profile', label: 'Update profile', icon: 'ionPersonCircleOutline' },
     { path: 'Notifications', label: 'Notifications', icon: 'ionNotifications' },
     { path: 'careerPath', label: 'Career Paths', icon: 'ionRocketOutline' }
   ];

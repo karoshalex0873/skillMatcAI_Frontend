@@ -12,7 +12,8 @@
         <input
           type="text"
           formControlName="name"
-          class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200 transition-all"
+          class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 placeholder:text-light-100/30 placeholder:italic focus:ring-light-200 transition-all"
+          placeholder="Enter your full name"
         />
         <div
           *ngIf="
@@ -31,7 +32,8 @@
         <input
           type="email"
           formControlName="email"
-          class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200 transition-all"
+          class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 placeholder:text-light-100/30 placeholder:italic focus:ring-light-200 transition-all"
+          placeholder="Enter your email"
         />
         <div
           *ngIf="
@@ -52,7 +54,8 @@
             [type]="showPassword ? 'text' : 'password'"
             formControlName="password"
             (input)="onPasswordChange($event)"
-            class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200 transition-all pr-10"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 placeholder:text-light-100/30 placeholder:italic focus:ring-light-200 transition-all pr-10"
+            placeholder="•••••••• (min. 8 characters)"
           />
           <button
             type="button"
@@ -76,7 +79,8 @@
           <input
             [type]="showConfirmPassword ? 'text' : 'password'"
             formControlName="confirmPassword"
-            class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200 transition-all pr-10"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 placeholder:text-light-100/30 placeholder:italic focus:ring-light-200 transition-all pr-10"
+            placeholder="•••••••• (min. 8 characters)"
           />
           <button
             type="button"
@@ -105,7 +109,7 @@
             *ngFor="let role of roles"
             class="flex items-center justify-center p-1 rounded-lg cursor-pointer transition-all"
             [ngClass]="{
-              'bg-primary border-2 border-light-200':
+              'bg-light-100/20 border-2 border-light-200':
                 registerForm.get('role')?.value == role.value,
               'bg-dark-200 border-2 border-gray-700 hover:border-gray-600':
                 registerForm.get('role')?.value != role.value
