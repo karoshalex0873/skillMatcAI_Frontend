@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../helpers/environment';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { ApplicationDetails, ApplicationStatus, Interview, InterviewApplication, Job } from '../helpers/types';
+
+interface ApiResponse {
+  type: string;
+  content: string;
+  data?: any[];
+  dataQuery?: any;
+  suggestions?: string[];
+  context?: any;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -104,19 +113,22 @@ export class JobService {
   }
 
 
-  sendQuery(query: string) {
-    const token = sessionStorage.getItem('accessToken');
 
-    return this.http.post<{ data: any }>(
-      `${environment.apiUrl}/jobs/ask`,
-      { question: query },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-  }
+// Add proper typing to the service method
+sendQuery(query: string): Observable<ApiResponse> {
+  const token = sessionStorage.getItem('accessToken');
+  return this.http.post<ApiResponse>(`${environment.apiUrl}/jobs/ask`, { question: query }, {
+    headers: { Authorization: `Bearer ${token}` }
+  }).pipe(
+    catchError(error => {
+      console.error('Error:', error);
+      return of({
+        type: 'error',
+        content: 'Failed to fetch data. Please try again.'
+      });
+    })
+  );
+}
 
 
   scheduleInterview(data: any): Observable<any> {

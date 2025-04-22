@@ -45,7 +45,6 @@ export class ApplicationItemComponent {
         }, 1500)
       },
       error: (err) => {
-        console.error('Failed to fetch applications', err);
         this.isLoading = false
       }
     })

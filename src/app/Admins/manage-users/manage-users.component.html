@@ -18,6 +18,22 @@
       Add New User
     </button>
   </div>
+  <!-- succcess message -->
+  <div *ngIf="successMsg" class="mb-4 w-md backdrop-blur-md px-3  bg-green-400/40  text-green-400 border border-light-100 rounded-md">
+    <span class="flex items-center py-1.5  mb-2 gap-2 text-light-100 text-lg ">
+      <ng-icon name="ionCheckmarkCircle" class="mr-2"></ng-icon>
+    {{ successMsg }}
+    </span>
+  </div>
+  
+  <!-- Error message -->
+  <div *ngIf="errorMsg" class="mb-4 bg-red-500/20  w-md  backdrop-blur-md px-3 rounded-md border border-light-100">
+    <span class="flex items-center py-1.5  mb-2 gap-2 text-light-100 text-lg ">
+      <ng-icon name="ionWarning" class="mr-2"></ng-icon>
+    {{ errorMsg }}
+    </span>
+  </div>
+  
 
   <!-- User Stats -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -181,10 +197,11 @@
             </td>
             <td>
               <div class="flex gap-2">
-                <button class="text-primary hover:text-primary/80">
-                  <ng-icon name="ionCreate"></ng-icon>
-                </button>
-                <button class="text-red-400 hover:text-red-300">
+                <!-- delete user -->
+                 
+                <button
+                (click)="deleteUser(user.id)"
+                 class="text-red-400 hover:text-red-300">
                   <ng-icon name="ionTrash"></ng-icon>
                 </button>
               </div>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 import { IconsModule } from '../../helpers/icons.module';
 import { AnalyticsService } from '../../service/analytics.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -38,6 +38,11 @@ export class ManageUsersComponent {
   loading = true;
   error = '';
   pagination: any = {};
+  errorMsg = '';
+  successMsg = '';
+  selectedUserId: string | null = null;
+  isEditMode = false;
+
 
   // Filters
   searchQuery = '';
@@ -185,8 +190,29 @@ export class ManageUsersComponent {
   }
 
   addUser() {
+    this.isEditMode = false;
+    this.selectedUserId = null;
+    this.userForm.reset();
+    this.errorMsg = '';
+    this.successMsg = '';
+    this.openModal();
+  }
+  
+
+  editUser(user: any) {
+    this.isEditMode = true;
+    this.selectedUserId = user.id;
+    this.userForm.patchValue(user);
+    this.errorMsg = '';
+    this.successMsg = '';
+    this.openModal();
+  }
+  
+
+  openModal() {
     this.dialog.open(this.userModal);
   }
+  
 
   closeModal() {
     this.dialog.closeAll();
@@ -194,18 +220,56 @@ export class ManageUsersComponent {
   
   onSubmit() {
     if (this.userForm.valid) {
-      this.userService.createUser(this.userForm.value).subscribe({
-        next: (res) => {
-          this.closeModal();
-          this.loadData(); // Refresh user list
-          // Show success message
+      const userData = this.userForm.value;
+  
+      if (this.isEditMode && this.selectedUserId) {
+        this.userService.updateUser(this.selectedUserId, userData).subscribe({
+          next: () => {
+            this.closeModal();
+            this.loadData();
+            this.successMsg = 'User updated successfully!';
+            setTimeout(() => this.successMsg = '', 3000);
+          },
+          error: (err) => {
+            this.errorMsg = err.error?.message || 'Failed to update user';
+            console.error('Update error:', err);
+          }
+        });
+      } else {
+        this.userService.createUser(userData).subscribe({
+          next: () => {
+            this.closeModal();
+            this.loadData();
+            this.successMsg = 'User created successfully!';
+            setTimeout(() => this.successMsg = '', 3000);
+          },
+          error: (err) => {
+            this.errorMsg = err.error?.message || 'Failed to create user';
+            console.error('Create error:', err);
+          }
+        });
+      }
+    }
+  }
+  
+  deleteUser(userId: string) {
+    if (confirm('Are you sure you want to delete this user?')) {
+      this.userService.deleteUser(userId).subscribe({
+        next: () => { 
+          this.successMsg = 'User deleted successfully!';
+          this.errorMsg = '';
+          setTimeout(() => this.successMsg = '', 3000);
+          this.loadData();
         },
         error: (err) => {
-          // Handle error
-          console.error('Error creating user:', err);
+          this.errorMsg = err.error?.message || 'Failed to delete user';
+          this.successMsg = '';
+          console.error('Delete error:', err);
         }
       });
     }
   }
+  
+  
 
 }

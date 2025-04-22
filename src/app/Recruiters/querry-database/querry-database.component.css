@@ -1,5 +1,26 @@
 /* querry-database.component.css */
 
+/* querry-database.component.css */
+.list-number {
+  color: #e5e7eb;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.response-icon {
+  vertical-align: text-bottom;
+  margin-right: 0.25rem;
+}
+
+.date-icon {
+  vertical-align: middle;
+  margin: 0 0.25rem;
+}
+
+.ai-response strong {
+  color: #d1d5db;
+  font-weight: 600;
+}
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;

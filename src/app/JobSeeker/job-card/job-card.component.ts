@@ -36,7 +36,7 @@ export class JobCardComponent {
       },
       error: (err) => {
         setTimeout(() => {
-          this.errorMessage = `Something went wrong ⚠`
+          this.errorMessage = err.error?.message || err.message
           this.isLoading = false;
         }, 2000);
       }
@@ -47,11 +47,15 @@ export class JobCardComponent {
   applyForJob(job_id: number) {
     // Clear previous messages
     this.clearMessages();
-    
+    const token = sessionStorage.getItem('accessToken');
     this.http.post(
       `${environment.apiUrl}/jobs/apply/${job_id}`,
       {},
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     ).subscribe({
       next: () => {
         this.successMessage = 'Application successful! Redirecting...';
@@ -61,13 +65,18 @@ export class JobCardComponent {
         }, 2500); // Give users 2.5 seconds to see the message
       },
       error: (err) => {
-        const msg = err.error?.message || err.message || 'Something went wrong';
+        if (err.status === 400) {
+          this.errorMessage = err.error?.message || err.message;
+          setTimeout(() => this.clearMessages(), 3000); // Show error message for 3 seconds
+          return;
+        }
+        const msg = "something went wrong, please try again later";
         this.errorMessage = msg;
         setTimeout(() => this.clearMessages(), 4000);
       }
     });
   }
-  
+
   private clearMessages() {
     this.successMessage = '';
     this.errorMessage = '';

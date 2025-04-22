@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../helpers/environment';
-import { tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -79,12 +79,27 @@ export class AuthService {
   // verify user
   verifyAuth() {
     const token = sessionStorage.getItem('accessToken');
-    console.log("Token being sent:", token); // Debug log
-
     return this.http.get<any>(`${this.apiUrl}/auth/verify`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
+  }
+
+  // verifyOtp
+
+  verifyOtp(userId: string, otpCode: string): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/auth/verifyOtp/${userId}`, 
+      { otpCode }
+    );
+  }
+
+  // resendOtp
+  resendOtp(userId: string): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/auth/resendOtp/${userId}`, 
+      {}
+    );
   }
 }

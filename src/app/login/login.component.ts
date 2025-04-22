@@ -15,7 +15,7 @@ import { AuthService } from '../service/auth.service';
 })
 export class LoginComponent {
   errorMessage: string = '';
-
+  isLoading: boolean = false;
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required,]),
@@ -34,7 +34,7 @@ export class LoginComponent {
 
   onSubmit() {
     this.errorMessage = '';
-
+    this.isLoading = true;
     if (this.loginForm.valid) {
       const formData = {
         email: this.loginForm.value.email,
@@ -43,25 +43,24 @@ export class LoginComponent {
       };
       this.authService.login(formData).subscribe({
         next: (response: any) => {
-          console.log(this.loginForm.value)
-          console.log("Login response:", response);
+
           sessionStorage.setItem('accessToken', response.accessToken);
           sessionStorage.setItem('refreshToken', response.refreshToken);
 
 
           this.authService.setUser(response.user);
-
           const role = response.user.Role;
-
           if (role === 1) this.router.navigate(['/jobs/aut']);
           if (role === 2) this.router.navigate(['/hire/postJob']);
           if (role === 3) this.router.navigate(['/admin/users']);
+          this.isLoading = false;
         },
         error: (error) => {
           if (error.status === 401) {
             this.errorMessage = 'Incorrect email or password';
           } else {
-            this.errorMessage = 'Something went wrong. Please try again.';
+            this.errorMessage = error.error.message;
+            this.isLoading = false;
           }
         }
       })

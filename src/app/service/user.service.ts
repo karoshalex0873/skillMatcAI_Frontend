@@ -15,20 +15,40 @@ export class UserService {
     const token = sessionStorage.getItem('accessToken');
     return this.http
       .get<any>(`${this.apiUrl}/auth/verify`, {
-        headers:{
+        headers: {
           Authorization: `Bearer ${token}`
         }
       })
   }
 
+
+  updateUser(userId: string, userData: any) {
+    const token = sessionStorage.getItem('accessToken');
+    return this.http.patch(`${this.apiUrl}/update/${userId}`, userData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
   createUser(userData: any) {
     const token = sessionStorage.getItem('accessToken');
 
-    return this.http.post(`${this.apiUrl}/users`, userData,{
-      headers:{
+    return this.http.post(`${this.apiUrl}/create`, userData, {
+      headers: {
         Authorization: `Bearer ${token}`
       }
     });
   }
-  
+
+
+
+  // delete user 
+  deleteUser(userId: string): Observable<any> {
+    const token = sessionStorage.getItem('accessToken');
+    return this.http.delete(`${this.apiUrl}/auth/delete/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
 }

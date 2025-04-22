@@ -100,7 +100,7 @@
       <!-- Role Selection -->
       <div>
         <label class="block text-light-200 text-sm mb-2">Register As</label>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-3 gap-2">
           <label
             *ngFor="let role of roles"
             class="flex items-center justify-center p-1 rounded-lg cursor-pointer transition-all"
@@ -151,7 +151,6 @@
         </label>
       </div>
 
-
       <!-- inavlid error -->
       <div
         *ngIf="
@@ -175,9 +174,10 @@
       <button
         type="submit"
         class="w-full bg-light-100 text-primary text-sm py-2 rounded-lg hover:bg-light-200 transition-colors font-medium mt-4"
-        [disabled]="!registerForm.valid"
+        [disabled]="!registerForm.valid || isRegistering"
       >
-        Create Account
+        <span *ngIf="!isRegistering">Create Account</span>
+        <span *ngIf="isRegistering">Creating Account...</span>
       </button>
     </form>
 
@@ -192,5 +192,70 @@
         >
       </p>
     </div>
+  </div>
+</div>
+
+<!-- Add this at the end of register.component.html -->
+<div
+  *ngIf="showOtpModal"
+  class="fixed inset-0 bg-dark-100/50  bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-md"
+>
+  <div class="bg-dark-100 rounded-xl shadow-lg p-6 w-full max-w-md">
+    <h2 class="text-2xl font-semibold text-light-100 mb-4 text-center">
+      Verify Your Email
+    </h2>
+
+    <p class="text-light-200 text-sm mb-6 text-center">
+      We've sent a 6-digit code to
+      <span class="text-light-100">{{ registeredEmail }}</span>
+    </p>
+
+    <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()" class="space-y-6">
+      <div class="flex justify-center space-x-2">
+        <input
+          *ngFor="let digit of [0, 1, 2, 3, 4, 5]; let i = index"
+          #otpInput
+          type="text"
+          maxlength="1"
+          (input)="handleOtpInput($event, i)"
+          (keydown)="handleKeyDown($event, i)"
+          (paste)="handlePaste($event)"
+          formControlName="digit{{ i }}"
+          class="w-12 h-12 text-center text-xl rounded-lg bg-primary border border-gray-700 text-light-100 focus:border-light-200 focus:ring-1 focus:ring-light-200"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+        />
+      </div>
+
+      <div
+        *ngIf="otpErrorMessage"
+        class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"
+      >
+        {{ otpErrorMessage }}
+      </div>
+
+      <div class="text-center">
+        <button
+          type="button"
+          (click)="resendOtp()"
+          class="text-light-100 hover:text-light-200 underline text-sm"
+          [disabled]="isResending || countdown > 0"
+        >
+          <span *ngIf="!isResending && countdown <= 0">Resend Code</span>
+          <span *ngIf="isResending">Resending...</span>
+          <span *ngIf="countdown > 0 && !isResending"
+            >Resend in {{ countdown }}s</span
+          >
+        </button>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-light-100 text-primary text-sm py-2 rounded-lg hover:bg-light-200 transition-colors font-medium disabled:opacity-50"
+        [disabled]="!otpForm.valid || isVerifying"
+      >
+        {{ isVerifying ? "Verifying..." : "Verify Account" }}
+      </button>
+    </form>
   </div>
 </div>

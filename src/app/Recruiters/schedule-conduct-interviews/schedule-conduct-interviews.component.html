@@ -94,7 +94,7 @@
 
         <!-- Notes -->
         <div>
-          <label class="block text-light-200 mb-2">Notes</label>
+          <label class="block text-light-200 mb-2">Interview Link</label>
           <textarea
             [(ngModel)]="notes"
             name="notes"
@@ -159,12 +159,23 @@
               <ng-icon name="ionTime" class="text-primary"></ng-icon>
               <span>{{ interview.scheduledAt | date:'HH:mm' }}</span>
             </div>
+
+            <!-- link -->
+            <div class="flex items-center text-light-100 gap-2">
+              <ng-icon name="ionLink" class="text-primary"></ng-icon>
+              <a
+                href="{{ interview.notes }}"
+                target="_blank"
+                class="text-light-100 hover:underline"
+                >Join Interview</a
+              >
           </div>
+
 
           <div class="mt-3 flex gap-2">
             <button
               (click)="editInterview(interview)"
-              class="text-xs bg-primary/20 text-primary px-3 py-1 rounded-md hover:bg-primary/30"
+              class="text-xs bg-light-100/20 text-light-200 px-3 py-1 rounded-md hover:bg-primary/30"
             >
               <ng-icon name="ionPencil" class="mr-1"></ng-icon>
               Edit
@@ -239,7 +250,7 @@
 
         <!-- Notes -->
         <div>
-          <label class="block text-light-200 mb-2">Notes</label>
+          <label class="block text-light-200 mb-2">Interview Link</label>
           <textarea
             [(ngModel)]="editingInterview.notes"
             name="notes"
