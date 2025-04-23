@@ -114,21 +114,27 @@ export class JobService {
 
 
 
-// Add proper typing to the service method
-sendQuery(query: string): Observable<ApiResponse> {
-  const token = sessionStorage.getItem('accessToken');
-  return this.http.post<ApiResponse>(`${environment.apiUrl}/jobs/ask`, { question: query }, {
-    headers: { Authorization: `Bearer ${token}` }
-  }).pipe(
-    catchError(error => {
-      console.error('Error:', error);
-      return of({
-        type: 'error',
-        content: 'Failed to fetch data. Please try again.'
-      });
-    })
-  );
-}
+  // Add proper typing to the service method
+  sendQuery(query: string): Observable<ApiResponse> {
+    const token = sessionStorage.getItem('accessToken');
+    return this.http.post<ApiResponse>(
+      `${environment.apiUrl}/jobs/ask`, 
+      { question: query }, 
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    ).pipe(
+      catchError(error => {
+        console.error('Error:', error);
+        return of({
+          type: 'error',
+          content: 'Failed to fetch data. Please try again.',
+          data: [],
+          suggestions: []
+        });
+      })
+    );
+  }
 
 
   scheduleInterview(data: any): Observable<any> {
